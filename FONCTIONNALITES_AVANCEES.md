@@ -282,23 +282,126 @@ php artisan view:cache
 
 ---
 
+## 🔏 Module de Signatures Électroniques {#signatures-electroniques}
+
+### Architecture Implémentée
+
+#### Table de Base de Données
+
+**`signatures`** - Gestion des signatures électroniques
+```
+- signable_type: Type polymorphique (Contrat ou MandatSepa)
+- signable_id: ID du document à signer
+- client_id: Client signataire
+- signataire_nom/email/telephone: Coordonnées
+- statut: en_attente, signe, refuse, expire
+- signature_data: Données signature (base64 ou certificat)
+- signature_ip: IP lors de la signature
+- signature_method: simple, advanced, qualified (eIDAS)
+- date_envoi/signature/expiration: Dates de suivi
+- token: Token unique pour lien sécurisé
+- certificat_path: Chemin certificat eIDAS si applicable
+```
+
+### Fonctionnalités
+
+#### Demande de Signature
+- Pour contrats : via `requestContractSignature()`
+- Pour mandats SEPA : via `requestSepaSignature()`
+- Génération token unique sécurisé (64 caractères)
+- Envoi email automatique avec lien
+- Expiration configurable (1-30 jours, défaut 7)
+
+#### Page de Signature Client
+- Accès via URL publique avec token : `/sign/{token}`
+- Vérification automatique expiration
+- Interface de signature (canvas HTML5)
+- Acceptation conditions obligatoire
+- Capture IP et horodatage
+
+#### Gestion Administrative
+- Liste de toutes les signatures avec filtres
+- Statut : en attente, signé, refusé, expiré
+- Renvoi email si nécessaire
+- Annulation d'une demande
+- Historique complet par document
+
+#### Méthodes de Signature
+
+**Simple** : Signature électronique basique (canvas)
+**Advanced** : Signature avancée avec données enrichies
+**Qualified** : Signature qualifiée eIDAS (certificat requis)
+
+### Relations
+
+```php
+// Signature belongsTo Client
+Signature::with('client')->get()
+
+// Relation polymorphique
+Contrat->signatures()
+MandatSepa->signatures()
+
+// Scope queries
+Signature::pending()->get()  // Signatures en attente
+Signature::signed()->get()   // Signées
+Signature::expired()->get()  // Expirées
+```
+
+### Routes Disponibles
+
+#### Admin (authentifiées)
+```
+GET  /signatures              Liste signatures
+POST /signatures/contrats/{id}/request   Demander signature contrat
+POST /signatures/sepa/{id}/request       Demander signature mandat
+POST /signatures/{id}/resend             Renvoyer email
+POST /signatures/{id}/cancel             Annuler demande
+```
+
+#### Client (publiques)
+```
+GET  /sign/{token}             Afficher formulaire signature
+POST /sign/{token}             Soumettre signature
+POST /sign/{token}/refuse      Refuser signature
+```
+
+### Workflow
+
+1. **Admin demande signature** → Création enregistrement + envoi email
+2. **Client reçoit email** → Clique sur lien unique
+3. **Client signe** → Données stockées + statut mis à jour
+4. **Document mis à jour** → Contrat/Mandat activé automatiquement
+
+### Sécurité
+
+- Token unique 64 caractères non-devinable
+- Vérification expiration avant chaque action
+- Capture IP du signataire
+- Horodatage précis de la signature
+- Support certificats eIDAS pour signatures qualifiées
+
+### Fichiers Créés/Modifiés
+- `app/Models/Signature.php` - Modèle complet avec scopes
+- `app/Http/Controllers/SignatureController.php` - Contrôleur (10 méthodes)
+- `database/migrations/2025_09_30_102031_create_signatures_table.php`
+- `app/Models/Contrat.php` - Ajout relation signatures()
+- `app/Models/MandatSepa.php` - Ajout relation signatures()
+- `routes/web.php` - Routes admin et publiques
+
+### À Compléter
+
+- [ ] Vues Blade (index, formulaire signature, succès, refusé, expiré)
+- [ ] Templates emails avec mise en page
+- [ ] Intégration prestataire eIDAS pour signatures qualifiées
+- [ ] Canvas HTML5 pour saisie signature manuscrite
+- [ ] Export PDF du document signé avec preuve
+
+---
+
 ## 🔜 Prochaines Étapes {#prochaines-etapes}
 
-### En Cours de Développement
-
-1. **Module de Signatures Électroniques** 🔏
-   - Intégration eIDAS qualifiée
-   - Signature de contrats en ligne
-   - Signature de mandats SEPA
-   - Archivage sécurisé
-
-2. **Système Multilingue FR/EN** 🌍
-   - Fichiers de traduction
-   - Sélecteur de langue
-   - Documents bilingues
-   - Détection automatique
-
-3. **Statistiques et Rapports Avancés** 📊
+### Statistiques et Rapports Avancés 📊
    - Rapports prédéfinis
    - Analyses personnalisées
    - Export Excel/CSV/PDF
@@ -330,25 +433,26 @@ php artisan view:cache
 
 ## 📊 État d'Avancement du Projet
 
-### ✅ Complété (50%)
+### ✅ Complété (65%)
 
 - [x] Infrastructure Laravel complète
 - [x] Modules commerciaux (Prospects, Clients, Contrats)
 - [x] Modules financiers (Factures, Règlements, SEPA)
 - [x] Gestion technique des boxes
 - [x] Dashboard avec statistiques
-- [x] **Plan interactif avancé** (NOUVEAU)
-- [x] **Rappels automatiques** (NOUVEAU)
-- [x] **Facturation en masse** (NOUVEAU)
+- [x] **Plan interactif avancé** ✨
+- [x] **Rappels automatiques** ✨
+- [x] **Facturation en masse** ✨
+- [x] **Système multilingue FR/EN** ✨
+- [x] **Signatures électroniques (backend)** ✨
 
-### 🔄 En Cours (30%)
+### 🔄 En Cours (20%)
 
-- [ ] Signatures électroniques
-- [ ] Système multilingue
+- [ ] Vues signatures électroniques (frontend)
 - [ ] Statistiques avancées
 - [ ] Interfaces complètes
 
-### ⏳ À Faire (20%)
+### ⏳ À Faire (15%)
 
 - [ ] Rapprochement bancaire
 - [ ] Service SMS
@@ -359,7 +463,24 @@ php artisan view:cache
 
 ## 📝 Notes de Version
 
-### Version 2.0 (30/09/2025)
+### Version 2.5 (30/09/2025 - Après-midi)
+
+**Nouvelles fonctionnalités** :
+- Système multilingue FR/EN complet
+- Module signatures électroniques (backend)
+- Relations polymorphiques pour signatures
+
+**Détails techniques** :
+- Middleware SetLocale avec 4 niveaux de détection
+- Modèle Signature avec scopes et helpers
+- SignatureController avec 10 méthodes
+- Routes admin et publiques
+
+**Fichiers ajoutés** : 8
+**Lignes ajoutées** : 1087
+**Lignes modifiées** : 6
+
+### Version 2.0 (30/09/2025 - Matin)
 
 **Nouvelles fonctionnalités** :
 - Plan interactif des boxes avec zoom et pan
