@@ -62,6 +62,11 @@ class Facture extends Model
         return $this->hasMany(Relance::class);
     }
 
+    public function reminders()
+    {
+        return $this->hasMany(PaymentReminder::class);
+    }
+
     public function scopePayee($query)
     {
         return $query->where('statut', 'payee');

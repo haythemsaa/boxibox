@@ -130,37 +130,120 @@ class FactureController extends Controller
         return response()->json(['message' => 'PDF generation not implemented yet']);
     }
 
+    /**
+     * Afficher l'interface de facturation en masse
+     */
+    public function bulkGenerateView()
+    {
+        $contrats = Contrat::with(['client', 'box'])
+            ->where('statut', 'actif')
+            ->whereDoesntHave('factures', function($query) {
+                $query->whereMonth('date_emission', now()->month)
+                      ->whereYear('date_emission', now()->year);
+            })
+            ->get();
+
+        return view('factures.bulk-generate', compact('contrats'));
+    }
+
+    /**
+     * Génération groupée de factures
+     */
     public function bulkGenerate(Request $request)
     {
         $validated = $request->validate([
-            'contrat_ids' => 'required|array',
+            'contrat_ids' => 'nullable|array',
             'contrat_ids.*' => 'exists:contrats,id',
-            'date_emission' => 'required|date'
+            'date_emission' => 'required|date',
+            'date_echeance' => 'required|date|after:date_emission',
+            'auto_send' => 'boolean',
+            'generate_all' => 'boolean'
         ]);
 
-        $contrats = Contrat::whereIn('id', $validated['contrat_ids'])->get();
-        $factures = [];
-
-        foreach ($contrats as $contrat) {
-            $facture = Facture::create([
-                'numero' => $this->generateNumeroFacture(),
-                'client_id' => $contrat->client_id,
-                'contrat_id' => $contrat->id,
-                'date_emission' => $validated['date_emission'],
-                'date_echeance' => now()->parse($validated['date_emission'])->addDays(30),
-                'montant_ht' => $contrat->prix_mensuel,
-                'taux_tva' => 20,
-                'montant_tva' => $contrat->prix_mensuel * 0.20,
-                'montant_ttc' => $contrat->prix_mensuel * 1.20,
-                'statut' => 'brouillon',
-                'description' => 'Facture mensuelle - Box ' . $contrat->box->numero
-            ]);
-
-            $factures[] = $facture;
+        // Si generate_all, prendre tous les contrats actifs
+        if ($request->generate_all) {
+            $contrats = Contrat::where('statut', 'actif')
+                ->whereDoesntHave('factures', function($query) use ($validated) {
+                    $query->whereDate('date_emission', $validated['date_emission']);
+                })
+                ->get();
+        } else {
+            $contrats = Contrat::whereIn('id', $validated['contrat_ids'] ?? [])->get();
         }
 
-        return redirect()->route('factures.index')
-            ->with('success', count($factures) . ' factures générées avec succès.');
+        if ($contrats->isEmpty()) {
+            return back()->with('warning', 'Aucun contrat à facturer.');
+        }
+
+        $factures = [];
+        $errors = [];
+
+        foreach ($contrats as $contrat) {
+            try {
+                // Calculer le montant du loyer + services
+                $montantHT = $contrat->prix_mensuel;
+
+                // Ajouter les services additionnels
+                if ($contrat->services) {
+                    foreach ($contrat->services as $service) {
+                        $montantHT += $service->prix;
+                    }
+                }
+
+                $tauxTVA = 20; // À récupérer depuis la config
+                $montantTVA = $montantHT * ($tauxTVA / 100);
+                $montantTTC = $montantHT + $montantTVA;
+
+                $facture = Facture::create([
+                    'numero' => $this->generateNumeroFacture(),
+                    'client_id' => $contrat->client_id,
+                    'contrat_id' => $contrat->id,
+                    'date_emission' => $validated['date_emission'],
+                    'date_echeance' => $validated['date_echeance'],
+                    'montant_ht' => $montantHT,
+                    'taux_tva' => $tauxTVA,
+                    'montant_tva' => $montantTVA,
+                    'montant_ttc' => $montantTTC,
+                    'statut' => $request->auto_send ? 'envoyee' : 'brouillon',
+                    'type_facture' => 'loyer',
+                    'notes' => 'Facture mensuelle - Box ' . $contrat->box->numero
+                ]);
+
+                // Créer les lignes de facture
+                $facture->lignes()->create([
+                    'description' => 'Location Box ' . $contrat->box->numero . ' - ' . $contrat->box->surface . 'm²',
+                    'quantite' => 1,
+                    'prix_unitaire' => $contrat->prix_mensuel,
+                    'montant' => $contrat->prix_mensuel,
+                ]);
+
+                // Si envoi automatique
+                if ($request->auto_send) {
+                    // TODO: Envoyer l'email au client
+                    $facture->update(['date_envoi' => now()]);
+                }
+
+                $factures[] = $facture;
+
+            } catch (\Exception $e) {
+                $errors[] = [
+                    'contrat' => $contrat->reference,
+                    'error' => $e->getMessage()
+                ];
+            }
+        }
+
+        if (empty($errors)) {
+            $message = count($factures) . ' facture(s) générée(s) avec succès.';
+            if ($request->auto_send) {
+                $message .= ' Les factures ont été envoyées aux clients.';
+            }
+            return redirect()->route('factures.index')->with('success', $message);
+        } else {
+            return redirect()->route('factures.index')
+                ->with('warning', count($factures) . ' facture(s) générée(s), ' . count($errors) . ' erreur(s).')
+                ->with('errors', $errors);
+        }
     }
 
     private function generateNumeroFacture()
