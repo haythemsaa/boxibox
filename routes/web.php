@@ -12,6 +12,7 @@ use App\Http\Controllers\SepaController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\StatisticController;
 use App\Http\Controllers\SettingController;
+use App\Http\Controllers\SignatureController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -127,6 +128,34 @@ Route::middleware('auth')->group(function () {
             ->middleware('permission:manage_settings');
     });
 
+    // Signatures Électroniques
+    Route::prefix('signatures')->group(function () {
+        // Routes admin (nécessitent auth)
+        Route::get('/', [SignatureController::class, 'index'])
+            ->name('signatures.index')
+            ->middleware('permission:view_signatures');
+
+        // Demande de signature pour contrat
+        Route::post('contrats/{contrat}/request', [SignatureController::class, 'requestContractSignature'])
+            ->name('signatures.request-contract')
+            ->middleware('permission:create_signatures');
+
+        // Demande de signature pour mandat SEPA
+        Route::post('sepa/{mandat}/request', [SignatureController::class, 'requestSepaSignature'])
+            ->name('signatures.request-sepa')
+            ->middleware('permission:create_signatures');
+
+        // Renvoyer un email de signature
+        Route::post('{signature}/resend', [SignatureController::class, 'resend'])
+            ->name('signatures.resend')
+            ->middleware('permission:create_signatures');
+
+        // Annuler une demande de signature
+        Route::post('{signature}/cancel', [SignatureController::class, 'cancel'])
+            ->name('signatures.cancel')
+            ->middleware('permission:delete_signatures');
+    });
+
     // API Routes pour AJAX
     Route::prefix('api')->group(function () {
         Route::get('clients/search', [ClientController::class, 'search'])->name('api.clients.search');
@@ -134,6 +163,13 @@ Route::middleware('auth')->group(function () {
         Route::get('prospects/stats', [ProspectController::class, 'stats'])->name('api.prospects.stats');
         Route::get('dashboard/charts', [DashboardController::class, 'charts'])->name('api.dashboard.charts');
     });
+});
+
+// Routes publiques pour la signature (ne nécessitent pas d'authentification)
+Route::prefix('sign')->group(function () {
+    Route::get('{token}', [SignatureController::class, 'show'])->name('signatures.show');
+    Route::post('{token}', [SignatureController::class, 'sign'])->name('signatures.sign');
+    Route::post('{token}/refuse', [SignatureController::class, 'refuse'])->name('signatures.refuse');
 });
 
 require __DIR__.'/auth.php';

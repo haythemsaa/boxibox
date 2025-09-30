@@ -50,6 +50,11 @@ class MandatSepa extends Model
         return $this->hasMany(PrelevementSepa::class);
     }
 
+    public function signatures()
+    {
+        return $this->morphMany(Signature::class, 'signable');
+    }
+
     public function scopeActif($query)
     {
         return $query->where('is_active', true);

@@ -62,6 +62,11 @@ class Contrat extends Model
         return $this->hasMany(ContratService::class);
     }
 
+    public function signatures()
+    {
+        return $this->morphMany(Signature::class, 'signable');
+    }
+
     public function scopeActif($query)
     {
         return $query->where('statut', 'actif');
