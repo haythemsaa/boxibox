@@ -20,6 +20,9 @@ class User extends Authenticatable
         'phone',
         'is_active',
         'last_login_at',
+        'tenant_id',
+        'type_user',
+        'client_id',
     ];
 
     protected $hidden = [
@@ -33,4 +36,77 @@ class User extends Authenticatable
         'last_login_at' => 'datetime',
         'is_active' => 'boolean',
     ];
+
+    // Relations
+
+    public function tenant()
+    {
+        return $this->belongsTo(Tenant::class);
+    }
+
+    public function client()
+    {
+        return $this->belongsTo(Client::class);
+    }
+
+    // Scopes
+
+    public function scopeForTenant($query, $tenantId)
+    {
+        return $query->where('tenant_id', $tenantId);
+    }
+
+    public function scopeSuperAdmins($query)
+    {
+        return $query->where('type_user', 'superadmin');
+    }
+
+    public function scopeAdminTenants($query)
+    {
+        return $query->where('type_user', 'admin_tenant');
+    }
+
+    public function scopeClientFinaux($query)
+    {
+        return $query->where('type_user', 'client_final');
+    }
+
+    // Helper Methods
+
+    public function isSuperAdmin()
+    {
+        return $this->type_user === 'superadmin';
+    }
+
+    public function isAdminTenant()
+    {
+        return $this->type_user === 'admin_tenant';
+    }
+
+    public function isClientFinal()
+    {
+        return $this->type_user === 'client_final';
+    }
+
+    public function canManageTenant()
+    {
+        return $this->isSuperAdmin();
+    }
+
+    public function canAccessTenant($tenantId)
+    {
+        return $this->isSuperAdmin() || $this->tenant_id == $tenantId;
+    }
+
+    public function getTypeUserLabel()
+    {
+        $labels = [
+            'superadmin' => 'Super Administrateur',
+            'admin_tenant' => 'Administrateur Entreprise',
+            'client_final' => 'Client Final',
+        ];
+
+        return $labels[$this->type_user] ?? $this->type_user;
+    }
+
 }

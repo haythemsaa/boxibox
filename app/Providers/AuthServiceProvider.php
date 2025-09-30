@@ -19,6 +19,11 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // Grant all permissions to SuperAdmin users
+        Gate::before(function ($user, $ability) {
+            if ($user->isSuperAdmin()) {
+                return true;
+            }
+        });
     }
 }

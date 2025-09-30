@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\SepaManadat;
+use App\Models\MandatSepa;
 use App\Models\Client;
 use Illuminate\Http\Request;
 
@@ -15,7 +15,7 @@ class SepaController extends Controller
 
     public function index(Request $request)
     {
-        $query = SepaManadat::with('client')
+        $query = MandatSepa::with('client')
             ->orderBy('created_at', 'desc');
 
         if ($request->filled('search')) {
@@ -39,7 +39,7 @@ class SepaController extends Controller
         return view('sepa.index', compact('mandats'));
     }
 
-    public function show(SepaManadat $mandat)
+    public function show(MandatSepa $mandat)
     {
         return view('sepa.show', compact('mandat'));
     }
@@ -67,20 +67,20 @@ class SepaController extends Controller
         $validated['rum'] = $this->generateRUM();
         $validated['date_creation'] = now();
 
-        $mandat = SepaManadat::create($validated);
+        $mandat = MandatSepa::create($validated);
 
         return redirect()->route('sepa.show', $mandat)
             ->with('success', 'Mandat SEPA créé avec succès.');
     }
 
-    public function edit(SepaManadat $mandat)
+    public function edit(MandatSepa $mandat)
     {
         $clients = Client::active()->get();
 
         return view('sepa.edit', compact('mandat', 'clients'));
     }
 
-    public function update(Request $request, SepaManadat $mandat)
+    public function update(Request $request, MandatSepa $mandat)
     {
         $validated = $request->validate([
             'client_id' => 'required|exists:clients,id',
@@ -98,7 +98,7 @@ class SepaController extends Controller
             ->with('success', 'Mandat SEPA modifié avec succès.');
     }
 
-    public function destroy(SepaManadat $mandat)
+    public function destroy(MandatSepa $mandat)
     {
         if ($mandat->statut === 'actif') {
             return redirect()->route('sepa.index')
@@ -111,7 +111,7 @@ class SepaController extends Controller
             ->with('success', 'Mandat SEPA supprimé avec succès.');
     }
 
-    public function activate(SepaManadat $mandat)
+    public function activate(MandatSepa $mandat)
     {
         if (!$mandat->canBeActivated()) {
             return redirect()->route('sepa.show', $mandat)

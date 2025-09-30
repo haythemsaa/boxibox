@@ -60,10 +60,10 @@ class FactureController extends Controller
             'description' => 'nullable|string'
         ]);
 
-        $validated['numero'] = $this->generateNumeroFacture();
+        $validated['numero_facture'] = $this->generateNumeroFacture();
         $validated['montant_tva'] = $validated['montant_ht'] * ($validated['taux_tva'] / 100);
         $validated['montant_ttc'] = $validated['montant_ht'] + $validated['montant_tva'];
-        $validated['statut'] = 'brouillon';
+        $validated['statut'] = $request->input('statut', 'brouillon');
 
         $facture = Facture::create($validated);
 
@@ -249,12 +249,12 @@ class FactureController extends Controller
     private function generateNumeroFacture()
     {
         $year = now()->year;
-        $lastFacture = Facture::where('numero', 'LIKE', "F{$year}%")
-            ->orderBy('numero', 'desc')
+        $lastFacture = Facture::where('numero_facture', 'LIKE', "F{$year}%")
+            ->orderBy('numero_facture', 'desc')
             ->first();
 
         if ($lastFacture) {
-            $lastNumber = (int) substr($lastFacture->numero, 5);
+            $lastNumber = (int) substr($lastFacture->numero_facture, 5);
             $newNumber = $lastNumber + 1;
         } else {
             $newNumber = 1;

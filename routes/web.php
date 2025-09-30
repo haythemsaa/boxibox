@@ -13,6 +13,8 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\StatisticController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\SignatureController;
+use App\Http\Controllers\SuperAdminController;
+use App\Http\Controllers\ClientPortalController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -126,6 +128,64 @@ Route::middleware('auth')->group(function () {
         Route::post('settings', [SettingController::class, 'update'])
             ->name('admin.settings.update')
             ->middleware('permission:manage_settings');
+    });
+
+    // Super Admin - Gestion Multi-Tenant
+    Route::prefix('superadmin')->middleware('auth')->group(function () {
+        Route::get('dashboard', [SuperAdminController::class, 'dashboard'])->name('superadmin.dashboard');
+        Route::get('stats', [SuperAdminController::class, 'stats'])->name('superadmin.stats');
+
+        Route::prefix('tenants')->name('superadmin.tenants.')->group(function () {
+            Route::get('/', [SuperAdminController::class, 'index'])->name('index');
+            Route::get('create', [SuperAdminController::class, 'create'])->name('create');
+            Route::post('/', [SuperAdminController::class, 'store'])->name('store');
+            Route::get('{tenant}', [SuperAdminController::class, 'show'])->name('show');
+            Route::get('{tenant}/edit', [SuperAdminController::class, 'edit'])->name('edit');
+            Route::put('{tenant}', [SuperAdminController::class, 'update'])->name('update');
+            Route::delete('{tenant}', [SuperAdminController::class, 'destroy'])->name('destroy');
+            Route::post('{tenant}/suspend', [SuperAdminController::class, 'suspend'])->name('suspend');
+            Route::post('{tenant}/activate', [SuperAdminController::class, 'activate'])->name('activate');
+        });
+    });
+
+    // Client Portal - Espace Client Final
+    Route::prefix('client')->middleware('auth')->group(function () {
+        // Dashboard
+        Route::get('dashboard', [ClientPortalController::class, 'dashboard'])->name('client.dashboard');
+
+        // Contrats
+        Route::get('contrats', [ClientPortalController::class, 'contrats'])->name('client.contrats');
+        Route::get('contrats/{contrat}', [ClientPortalController::class, 'contratShow'])->name('client.contrats.show');
+        Route::get('contrats/{contrat}/pdf', [ClientPortalController::class, 'contratPdf'])->name('client.contrats.pdf');
+
+        // Mandats SEPA
+        Route::get('sepa', [ClientPortalController::class, 'sepa'])->name('client.sepa');
+        Route::get('sepa/create', [ClientPortalController::class, 'sepaCreate'])->name('client.sepa.create');
+        Route::post('sepa', [ClientPortalController::class, 'sepaStore'])->name('client.sepa.store');
+
+        // Profil / Informations
+        Route::get('profil', [ClientPortalController::class, 'profil'])->name('client.profil');
+        Route::put('profil', [ClientPortalController::class, 'updateProfil'])->name('client.profil.update');
+
+        // Factures et Avoirs
+        Route::get('factures', [ClientPortalController::class, 'factures'])->name('client.factures');
+        Route::get('factures/{facture}', [ClientPortalController::class, 'factureShow'])->name('client.factures.show');
+        Route::get('factures/{facture}/pdf', [ClientPortalController::class, 'facturePdf'])->name('client.factures.pdf');
+
+        // Règlements
+        Route::get('reglements', [ClientPortalController::class, 'reglements'])->name('client.reglements');
+
+        // Relances
+        Route::get('relances', [ClientPortalController::class, 'relances'])->name('client.relances');
+
+        // Fichiers / Documents
+        Route::get('documents', [ClientPortalController::class, 'documents'])->name('client.documents');
+        Route::post('documents/upload', [ClientPortalController::class, 'documentUpload'])->name('client.documents.upload');
+        Route::get('documents/{document}/download', [ClientPortalController::class, 'documentDownload'])->name('client.documents.download');
+        Route::delete('documents/{document}', [ClientPortalController::class, 'documentDelete'])->name('client.documents.delete');
+
+        // Suivi
+        Route::get('suivi', [ClientPortalController::class, 'suivi'])->name('client.suivi');
     });
 
     // Signatures Électroniques
