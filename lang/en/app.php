@@ -1,0 +1,123 @@
+<?php
+
+return [
+    // Navigation
+    'dashboard' => 'Dashboard',
+    'commercial' => 'Commercial',
+    'prospects' => 'Prospects',
+    'clients' => 'Clients',
+    'contracts' => 'Contracts',
+    'financial' => 'Financial',
+    'invoices' => 'Invoices',
+    'payments' => 'Payments',
+    'sepa' => 'SEPA',
+    'reminders' => 'Reminders',
+    'technical' => 'Technical',
+    'boxes' => 'Boxes',
+    'box_plan' => 'Box Plan',
+    'catalog' => 'Catalog',
+    'administration' => 'Administration',
+    'users' => 'Users',
+    'statistics' => 'Statistics',
+    'settings' => 'Settings',
+
+    // Common actions
+    'add' => 'Add',
+    'edit' => 'Edit',
+    'delete' => 'Delete',
+    'save' => 'Save',
+    'cancel' => 'Cancel',
+    'search' => 'Search',
+    'filter' => 'Filter',
+    'export' => 'Export',
+    'import' => 'Import',
+    'print' => 'Print',
+    'download' => 'Download',
+    'view' => 'View',
+    'send' => 'Send',
+    'close' => 'Close',
+    'confirm' => 'Confirm',
+    'back' => 'Back',
+    'next' => 'Next',
+    'previous' => 'Previous',
+
+    // Status
+    'status' => 'Status',
+    'active' => 'Active',
+    'inactive' => 'Inactive',
+    'pending' => 'Pending',
+    'completed' => 'Completed',
+    'cancelled' => 'Cancelled',
+    'draft' => 'Draft',
+    'sent' => 'Sent',
+    'paid' => 'Paid',
+    'unpaid' => 'Unpaid',
+    'overdue' => 'Overdue',
+
+    // Box status
+    'available' => 'Available',
+    'occupied' => 'Occupied',
+    'reserved' => 'Reserved',
+    'maintenance' => 'Maintenance',
+    'out_of_service' => 'Out of Service',
+
+    // Messages
+    'success' => 'Success',
+    'error' => 'Error',
+    'warning' => 'Warning',
+    'info' => 'Information',
+    'confirmation' => 'Confirmation',
+    'are_you_sure' => 'Are you sure?',
+    'no_results' => 'No results found',
+    'loading' => 'Loading...',
+
+    // Forms
+    'firstname' => 'First Name',
+    'lastname' => 'Last Name',
+    'email' => 'Email',
+    'phone' => 'Phone',
+    'address' => 'Address',
+    'city' => 'City',
+    'postal_code' => 'Postal Code',
+    'country' => 'Country',
+    'date' => 'Date',
+    'amount' => 'Amount',
+    'quantity' => 'Quantity',
+    'description' => 'Description',
+    'notes' => 'Notes',
+    'reference' => 'Reference',
+
+    // Dates
+    'start_date' => 'Start Date',
+    'end_date' => 'End Date',
+    'due_date' => 'Due Date',
+    'issue_date' => 'Issue Date',
+    'created_at' => 'Created at',
+    'updated_at' => 'Updated at',
+
+    // Finance
+    'amount_ht' => 'Amount ex. VAT',
+    'vat_rate' => 'VAT Rate',
+    'vat_amount' => 'VAT Amount',
+    'amount_ttc' => 'Amount incl. VAT',
+    'payment_method' => 'Payment Method',
+    'invoice_number' => 'Invoice Number',
+
+    // Dashboard
+    'welcome' => 'Welcome',
+    'overview' => 'Overview',
+    'total' => 'Total',
+    'this_month' => 'This Month',
+    'this_year' => 'This Year',
+    'occupancy_rate' => 'Occupancy Rate',
+    'revenue' => 'Revenue',
+    'free_boxes' => 'Free Boxes',
+    'occupied_boxes' => 'Occupied Boxes',
+
+    // Pagination
+    'showing' => 'Showing',
+    'to' => 'to',
+    'of' => 'of',
+    'results' => 'results',
+    'per_page' => 'per page',
+];
