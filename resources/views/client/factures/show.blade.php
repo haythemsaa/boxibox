@@ -76,7 +76,7 @@
                     <table class="table table-borderless">
                         <tr>
                             <th width="40%">Montant HT:</th>
-                            <td>{{ number_format($facture->montant_total_ht, 2) }} €</td>
+                            <td>{{ number_format($facture->montant_ht, 2) }} €</td>
                         </tr>
                         <tr>
                             <th>TVA ({{ $facture->taux_tva ?? 20 }}%):</th>
@@ -84,17 +84,20 @@
                         </tr>
                         <tr class="table-active">
                             <th><strong>Montant TTC:</strong></th>
-                            <td><strong class="text-primary fs-5">{{ number_format($facture->montant_total_ttc, 2) }} €</strong></td>
+                            <td><strong class="text-primary fs-5">{{ number_format($facture->montant_ttc, 2) }} €</strong></td>
                         </tr>
-                        @if($facture->montant_regle > 0)
+                        @php
+                            $montantRegle = $facture->reglements->sum('montant');
+                        @endphp
+                        @if($montantRegle > 0)
                         <tr>
                             <th>Montant Réglé:</th>
-                            <td class="text-success">{{ number_format($facture->montant_regle, 2) }} €</td>
+                            <td class="text-success">{{ number_format($montantRegle, 2) }} €</td>
                         </tr>
                         <tr>
                             <th>Reste à Payer:</th>
                             <td class="text-danger">
-                                <strong>{{ number_format($facture->montant_total_ttc - $facture->montant_regle, 2) }} €</strong>
+                                <strong>{{ number_format($facture->montant_ttc - $montantRegle, 2) }} €</strong>
                             </td>
                         </tr>
                         @endif

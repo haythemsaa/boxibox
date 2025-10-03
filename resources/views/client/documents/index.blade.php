@@ -145,13 +145,13 @@
                                 @if($document->uploaded_by == Auth::id())
                                 <form action="{{ route('client.documents.delete', $document) }}"
                                       method="POST"
-                                      class="d-inline"
-                                      onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce document ?');">
+                                      class="d-inline delete-form">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit"
                                             class="btn btn-outline-danger"
-                                            title="Supprimer">
+                                            title="Supprimer"
+                                            onclick="confirmDelete(event, 'Le document sera définitivement supprimé.')">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </form>

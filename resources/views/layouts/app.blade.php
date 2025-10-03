@@ -153,8 +153,74 @@
             </li>
             @can('view_boxes')
             <li class="nav-item">
-                <a class="nav-link {{ request()->routeIs('boxes.*') ? 'active' : '' }}" href="{{ route('boxes.index') }}">
-                    <i class="fas fa-th-large me-2"></i> Plan des Boxes
+                <a class="nav-link {{ request()->routeIs('boxes.index') ? 'active' : '' }}" href="{{ route('boxes.index') }}">
+                    <i class="fas fa-th-large me-2"></i> Boxes (Liste)
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ request()->routeIs('boxes.plan') ? 'active' : '' }}" href="{{ route('boxes.plan') }}">
+                    <i class="fas fa-map me-2"></i> Plan Interactif
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ request()->routeIs('boxes.plan.editor') ? 'active' : '' }}" href="{{ route('boxes.plan.editor') }}">
+                    <i class="fas fa-edit me-2"></i> Éditeur de Plan
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ request()->routeIs('boxes.plan.editor.advanced') ? 'active' : '' }}" href="{{ route('boxes.plan.editor.advanced') }}">
+                    <i class="fas fa-pencil-ruler me-2"></i> Éditeur Avancé
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ request()->routeIs('boxes.floorplan.designer') ? 'active' : '' }}" href="{{ route('boxes.floorplan.designer') }}">
+                    <i class="fas fa-pen-fancy me-2"></i> Designer de Salle
+                </a>
+            </li>
+            @endcan
+
+            @can('view_emplacements')
+            <li class="nav-item">
+                <a class="nav-link {{ request()->routeIs('emplacements.*') ? 'active' : '' }}" href="{{ route('emplacements.index') }}">
+                    <i class="fas fa-map-marker-alt me-2"></i> Emplacements
+                </a>
+            </li>
+            @endcan
+
+            @can('view_box_familles')
+            <li class="nav-item">
+                <a class="nav-link {{ request()->routeIs('box-familles.*') ? 'active' : '' }}" href="{{ route('box-familles.index') }}">
+                    <i class="fas fa-tags me-2"></i> Familles de Boxes
+                </a>
+            </li>
+            @endcan
+
+            <!-- Administration -->
+            <li class="nav-item">
+                <a class="nav-link text-white-50 small fw-bold text-uppercase mt-3" href="#" style="pointer-events: none;">
+                    Administration
+                </a>
+            </li>
+            @can('view_users')
+            <li class="nav-item">
+                <a class="nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}" href="{{ route('admin.users.index') }}">
+                    <i class="fas fa-users-cog me-2"></i> Utilisateurs
+                </a>
+            </li>
+            @endcan
+
+            @can('view_statistics')
+            <li class="nav-item">
+                <a class="nav-link {{ request()->routeIs('admin.statistics') ? 'active' : '' }}" href="{{ route('admin.statistics') }}">
+                    <i class="fas fa-chart-line me-2"></i> Statistiques
+                </a>
+            </li>
+            @endcan
+
+            @can('view_signatures')
+            <li class="nav-item">
+                <a class="nav-link {{ request()->routeIs('signatures.*') ? 'active' : '' }}" href="{{ route('signatures.index') }}">
+                    <i class="fas fa-signature me-2"></i> Signatures
                 </a>
             </li>
             @endcan

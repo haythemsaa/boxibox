@@ -17,6 +17,21 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.bootstrap5.min.css">
+
+    <!-- AOS - Animate On Scroll -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+    <!-- SweetAlert2 -->
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.0/dist/sweetalert2.min.css" rel="stylesheet">
+
+    @stack('styles')
+
     <style>
         body {
             font-family: 'Figtree', sans-serif;
@@ -72,6 +87,104 @@
             border: none;
             box-shadow: 0 0 10px rgba(0,0,0,0.05);
             border-radius: 10px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        /* DataTables custom styles */
+        .dataTables_wrapper .dataTables_filter input {
+            border-radius: 20px;
+            padding: 0.5rem 1rem;
+            border: 1px solid #dee2e6;
+        }
+
+        .dataTables_wrapper .dataTables_length select {
+            border-radius: 8px;
+            padding: 0.375rem 2rem 0.375rem 0.75rem;
+        }
+
+        table.dataTable thead th {
+            border-bottom: 2px solid #0d6efd;
+            font-weight: 600;
+        }
+
+        table.dataTable tbody tr {
+            transition: background-color 0.2s ease;
+        }
+
+        table.dataTable tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        /* Loading skeleton */
+        .skeleton {
+            animation: skeleton-loading 1s linear infinite alternate;
+        }
+
+        @keyframes skeleton-loading {
+            0% {
+                background-color: hsl(200, 20%, 80%);
+            }
+            100% {
+                background-color: hsl(200, 20%, 95%);
+            }
+        }
+
+        .skeleton-text {
+            width: 100%;
+            height: 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 4px;
+        }
+
+        .skeleton-title {
+            width: 50%;
+            height: 1.5rem;
+            margin-bottom: 1rem;
+            border-radius: 4px;
+        }
+
+        /* Smooth transitions for elements */
+        .btn {
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        .badge {
+            transition: all 0.2s ease;
+        }
+
+        .badge:hover {
+            transform: scale(1.05);
+        }
+
+        /* Stats card animations */
+        .stat-card {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .stat-card:hover::before {
+            left: 100%;
         }
 
         .user-info {
@@ -109,10 +222,6 @@
                             {{ Auth::user()->name }}
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="{{ route('client.profil') }}">
-                                <i class="fas fa-user me-2"></i>Mon Profil
-                            </a></li>
-                            <li><hr class="dropdown-divider"></li>
                             <li>
                                 <form method="POST" action="{{ route('logout') }}">
                                     @csrf
@@ -139,22 +248,25 @@
                     </div>
 
                     <ul class="nav flex-column">
+                        <!-- 1. Accueil / Tableau de bord -->
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('client.dashboard') ? 'active' : '' }}"
                                href="{{ route('client.dashboard') }}">
                                 <i class="fas fa-home"></i>
-                                Tableau de bord
+                                Accueil
                             </a>
                         </li>
 
+                        <!-- 2. Contrats -->
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('client.contrats*') ? 'active' : '' }}"
                                href="{{ route('client.contrats') }}">
                                 <i class="fas fa-file-contract"></i>
-                                Mes Contrats
+                                Contrats
                             </a>
                         </li>
 
+                        <!-- 3. Mandats SEPA -->
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('client.sepa*') ? 'active' : '' }}"
                                href="{{ route('client.sepa') }}">
@@ -163,14 +275,25 @@
                             </a>
                         </li>
 
+                        <!-- 4. Informations (Profil) -->
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('client.profil*') ? 'active' : '' }}"
+                               href="{{ route('client.profil') }}">
+                                <i class="fas fa-user-circle"></i>
+                                Informations
+                            </a>
+                        </li>
+
+                        <!-- 5. Factures & Avoirs -->
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('client.factures*') ? 'active' : '' }}"
                                href="{{ route('client.factures') }}">
-                                <i class="fas fa-file-invoice"></i>
+                                <i class="fas fa-file-invoice-dollar"></i>
                                 Factures & Avoirs
                             </a>
                         </li>
 
+                        <!-- 6. Règlements -->
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('client.reglements*') ? 'active' : '' }}"
                                href="{{ route('client.reglements') }}">
@@ -179,6 +302,7 @@
                             </a>
                         </li>
 
+                        <!-- 7. Relances -->
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('client.relances*') ? 'active' : '' }}"
                                href="{{ route('client.relances') }}">
@@ -187,27 +311,21 @@
                             </a>
                         </li>
 
+                        <!-- 8. Fichiers -->
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('client.documents*') ? 'active' : '' }}"
                                href="{{ route('client.documents') }}">
-                                <i class="fas fa-folder"></i>
-                                Mes Fichiers
+                                <i class="fas fa-folder-open"></i>
+                                Fichiers
                             </a>
                         </li>
 
+                        <!-- 9. Suivi -->
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('client.suivi*') ? 'active' : '' }}"
                                href="{{ route('client.suivi') }}">
-                                <i class="fas fa-history"></i>
+                                <i class="fas fa-clock"></i>
                                 Suivi
-                            </a>
-                        </li>
-
-                        <li class="nav-item mt-3">
-                            <a class="nav-link {{ request()->routeIs('client.profil*') ? 'active' : '' }}"
-                               href="{{ route('client.profil') }}">
-                                <i class="fas fa-user-cog"></i>
-                                Informations
                             </a>
                         </li>
                     </ul>
@@ -249,8 +367,101 @@
         </div>
     </div>
 
+    <!-- jQuery (required for DataTables) -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
     <!-- Bootstrap 5 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- DataTables JS -->
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.5.0/js/responsive.bootstrap5.min.js"></script>
+
+    <!-- AOS - Animate On Scroll -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.0/dist/sweetalert2.all.min.js"></script>
+
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            easing: 'ease-in-out',
+            once: true,
+            mirror: false
+        });
+
+        // Toast notification helper
+        function showToast(type, message) {
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                }
+            });
+
+            Toast.fire({
+                icon: type,
+                title: message
+            });
+        }
+
+        // Show toasts for Laravel flash messages
+        @if(session('success'))
+            showToast('success', '{{ session('success') }}');
+        @endif
+
+        @if(session('error'))
+            showToast('error', '{{ session('error') }}');
+        @endif
+
+        @if(session('warning'))
+            showToast('warning', '{{ session('warning') }}');
+        @endif
+
+        @if(session('info'))
+            showToast('info', '{{ session('info') }}');
+        @endif
+
+        // Confirm delete with SweetAlert2
+        function confirmDelete(event, message = 'Cette action est irréversible !') {
+            event.preventDefault();
+
+            Swal.fire({
+                title: 'Êtes-vous sûr?',
+                text: message,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Oui, supprimer',
+                cancelButtonText: 'Annuler'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    event.target.closest('form').submit();
+                }
+            });
+        }
+
+        // Initialize DataTables with French translation
+        $.extend(true, $.fn.dataTable.defaults, {
+            language: {
+                url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/fr-FR.json'
+            },
+            responsive: true,
+            pageLength: 10,
+            lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "Tous"]],
+            order: [[0, 'desc']]
+        });
+    </script>
 
     @stack('scripts')
 </body>

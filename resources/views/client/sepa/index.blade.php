@@ -69,6 +69,11 @@
                                 </tr>
                                 @endif
                             </table>
+                            <div class="card-footer bg-transparent">
+                                <a href="{{ route('client.sepa.pdf', $mandat) }}" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-download me-1"></i>Télécharger PDF
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>

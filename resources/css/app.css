@@ -1,0 +1,14 @@
+/* Application CSS */
+
+body {
+    font-family: 'Figtree', sans-serif;
+}
+
+.font-sans {
+    font-family: 'Figtree', sans-serif;
+}
+
+.antialiased {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}

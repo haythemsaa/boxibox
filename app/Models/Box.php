@@ -19,6 +19,10 @@ class Box extends Model
         'statut',
         'coordonnees_x',
         'coordonnees_y',
+        'plan_x',
+        'plan_y',
+        'plan_width',
+        'plan_height',
         'description',
         'is_active',
     ];

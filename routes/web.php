@@ -107,6 +107,21 @@ Route::middleware('auth')->group(function () {
         Route::get('plan', [BoxController::class, 'plan'])
             ->name('boxes.plan')
             ->middleware('permission:manage_box_plan');
+        Route::get('plan/editor', [BoxController::class, 'planEditor'])
+            ->name('boxes.plan.editor')
+            ->middleware('permission:manage_box_plan');
+        Route::get('plan/editor-advanced', [BoxController::class, 'planEditorAdvanced'])
+            ->name('boxes.plan.editor.advanced')
+            ->middleware('permission:manage_box_plan');
+        Route::get('plan/designer', [BoxController::class, 'floorPlanDesigner'])
+            ->name('boxes.floorplan.designer')
+            ->middleware('permission:manage_box_plan');
+        Route::post('plan/save', [BoxController::class, 'savePlan'])
+            ->name('boxes.plan.save')
+            ->middleware('permission:manage_box_plan');
+        Route::post('plan/floorplan-save', [BoxController::class, 'saveFloorPlan'])
+            ->name('boxes.floorplan.save')
+            ->middleware('permission:manage_box_plan');
         Route::post('boxes/{box}/reserve', [BoxController::class, 'reserve'])
             ->name('boxes.reserve')
             ->middleware('permission:edit_boxes');
@@ -162,6 +177,7 @@ Route::middleware('auth')->group(function () {
         Route::get('sepa', [ClientPortalController::class, 'sepa'])->name('client.sepa');
         Route::get('sepa/create', [ClientPortalController::class, 'sepaCreate'])->name('client.sepa.create');
         Route::post('sepa', [ClientPortalController::class, 'sepaStore'])->name('client.sepa.store');
+        Route::get('sepa/{mandat}/pdf', [ClientPortalController::class, 'sepaPdf'])->name('client.sepa.pdf');
 
         // Profil / Informations
         Route::get('profil', [ClientPortalController::class, 'profil'])->name('client.profil');
@@ -186,6 +202,9 @@ Route::middleware('auth')->group(function () {
 
         // Suivi
         Route::get('suivi', [ClientPortalController::class, 'suivi'])->name('client.suivi');
+
+        // Plan des Boxes
+        Route::get('box-plan', [ClientPortalController::class, 'boxPlan'])->name('client.boxplan');
     });
 
     // Signatures Électroniques
@@ -233,3 +252,15 @@ Route::prefix('sign')->group(function () {
 });
 
 require __DIR__.'/auth.php';
+// Route de test Vue.js (TEMPORAIRE - à supprimer en production)
+Route::get('/test-vue', function () {
+    return \Inertia\Inertia::render('Client/Dashboard', [
+        'stats' => [
+            'contrats_actifs' => 3,
+            'factures_impayees' => 2,
+            'montant_du' => 1500.00,
+            'documents' => 5,
+            'mandat_sepa_actif' => true
+        ],
+    ]);
+});

@@ -120,14 +120,26 @@ class FactureController extends Controller
             'date_envoi' => now()
         ]);
 
+        // Envoyer l'email au client avec la facture en pièce jointe
+        try {
+            \Illuminate\Support\Facades\Mail::to($facture->client->email)
+                ->send(new \App\Mail\FactureCreatedMail($facture));
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Erreur envoi email facture: ' . $e->getMessage());
+        }
+
         return redirect()->route('factures.show', $facture)
             ->with('success', 'Facture envoyée avec succès.');
     }
 
     public function pdf(Facture $facture)
     {
-        // TODO: Implement PDF generation
-        return response()->json(['message' => 'PDF generation not implemented yet']);
+        $facture->load(['client', 'lignes', 'reglements']);
+        $client = $facture->client;
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.facture', compact('facture', 'client'));
+
+        return $pdf->download('facture_' . $facture->numero_facture . '.pdf');
     }
 
     /**
@@ -219,8 +231,15 @@ class FactureController extends Controller
 
                 // Si envoi automatique
                 if ($request->auto_send) {
-                    // TODO: Envoyer l'email au client
                     $facture->update(['date_envoi' => now()]);
+
+                    // Envoyer l'email au client
+                    try {
+                        \Illuminate\Support\Facades\Mail::to($facture->client->email)
+                            ->send(new \App\Mail\FactureCreatedMail($facture));
+                    } catch (\Exception $e) {
+                        \Illuminate\Support\Facades\Log::error('Erreur envoi email facture bulk: ' . $e->getMessage());
+                    }
                 }
 
                 $factures[] = $facture;

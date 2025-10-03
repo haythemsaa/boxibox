@@ -48,7 +48,32 @@ class AuthenticatedSessionController extends Controller
             'user_agent' => $request->userAgent()
         ]);
 
-        return redirect()->intended(route('dashboard'));
+        // Redirection selon le type d'utilisateur
+        $user = Auth::user();
+
+        \Log::info('User login redirect', [
+            'user_id' => $user->id,
+            'type_user' => $user->type_user,
+            'isSuperAdmin' => $user->isSuperAdmin(),
+            'isClientFinal' => $user->isClientFinal(),
+        ]);
+
+        // Déterminer la route de redirection selon le type d'utilisateur
+        if ($user->isSuperAdmin()) {
+            $redirectRoute = 'superadmin.dashboard';
+        } elseif ($user->isClientFinal()) {
+            $redirectRoute = 'client.dashboard';
+        } else {
+            $redirectRoute = 'dashboard';
+        }
+
+        // Redirection - utiliser intended() seulement si l'URL précédente n'était pas /dashboard
+        $intended = session('url.intended');
+        if ($intended && !str_contains($intended, '/dashboard')) {
+            return redirect()->intended(route($redirectRoute));
+        }
+
+        return redirect()->route($redirectRoute);
     }
 
     /**

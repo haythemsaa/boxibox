@@ -11,7 +11,7 @@
 <!-- Statistiques principales -->
 <div class="row mb-4">
     <div class="col-md-3 mb-3">
-        <div class="card border-start border-primary border-4">
+        <div class="card stat-card border-start border-primary border-4" data-aos="fade-up">
             <div class="card-body">
                 <div class="d-flex align-items-center">
                     <div class="flex-shrink-0">
@@ -27,7 +27,7 @@
     </div>
 
     <div class="col-md-3 mb-3">
-        <div class="card border-start border-danger border-4">
+        <div class="card stat-card border-start border-danger border-4" data-aos="fade-up" data-aos-delay="100">
             <div class="card-body">
                 <div class="d-flex align-items-center">
                     <div class="flex-shrink-0">
@@ -43,7 +43,7 @@
     </div>
 
     <div class="col-md-3 mb-3">
-        <div class="card border-start border-warning border-4">
+        <div class="card stat-card border-start border-warning border-4" data-aos="fade-up" data-aos-delay="200">
             <div class="card-body">
                 <div class="d-flex align-items-center">
                     <div class="flex-shrink-0">
@@ -59,7 +59,7 @@
     </div>
 
     <div class="col-md-3 mb-3">
-        <div class="card border-start border-success border-4">
+        <div class="card stat-card border-start border-success border-4" data-aos="fade-up" data-aos-delay="300">
             <div class="card-body">
                 <div class="d-flex align-items-center">
                     <div class="flex-shrink-0">
@@ -70,6 +70,20 @@
                         <div class="h6 mb-0">{{ $stats['mandat_sepa_actif'] ? 'Actif' : 'Non configuré' }}</div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Graphique des factures -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card" data-aos="fade-up">
+            <div class="card-header bg-white">
+                <h5 class="mb-0"><i class="fas fa-chart-bar me-2"></i>Évolution des Factures (6 derniers mois)</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="facturesChart" height="80"></canvas>
             </div>
         </div>
     </div>
@@ -158,7 +172,7 @@
                         </div>
                     </div>
                     <div class="d-flex justify-content-between align-items-center">
-                        <span class="h6 mb-0 text-primary">{{ number_format($facture->montant_total_ttc, 2) }} €</span>
+                        <span class="h6 mb-0 text-primary">{{ number_format($facture->montant_ttc, 2) }} €</span>
                         <div class="btn-group btn-group-sm">
                             <a href="{{ route('client.factures.show', $facture) }}" class="btn btn-outline-primary" title="Voir">
                                 <i class="fas fa-eye"></i>
@@ -279,6 +293,90 @@
     border-color: #0d6efd;
     background: #f8f9fa;
 }
+
+.stat-card {
+    opacity: 0;
+}
 </style>
+@endpush
+
+@push('scripts')
+<script>
+$(document).ready(function() {
+    // Animate stats cards
+    $('.stat-card').each(function(index) {
+        $(this).delay(100 * index).animate({opacity: 1}, 500);
+    });
+
+    // Chart.js - Évolution des factures
+    const ctx = document.getElementById('facturesChart');
+    if (ctx) {
+        // Données pour les 6 derniers mois
+        const months = [];
+        const today = new Date();
+        for (let i = 5; i >= 0; i--) {
+            const d = new Date(today.getFullYear(), today.getMonth() - i, 1);
+            months.push(d.toLocaleDateString('fr-FR', { month: 'short', year: 'numeric' }));
+        }
+
+        // Simuler les données (vous pouvez passer les vraies données depuis le controller)
+        const data = {
+            labels: months,
+            datasets: [
+                {
+                    label: 'Payées',
+                    data: [12, 15, 13, 18, 14, 16],
+                    backgroundColor: 'rgba(25, 135, 84, 0.2)',
+                    borderColor: 'rgb(25, 135, 84)',
+                    borderWidth: 2,
+                    tension: 0.4
+                },
+                {
+                    label: 'Impayées',
+                    data: [2, 1, 3, 1, 2, 1],
+                    backgroundColor: 'rgba(220, 53, 69, 0.2)',
+                    borderColor: 'rgb(220, 53, 69)',
+                    borderWidth: 2,
+                    tension: 0.4
+                }
+            ]
+        };
+
+        new Chart(ctx, {
+            type: 'line',
+            data: data,
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: false
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                },
+                interaction: {
+                    mode: 'nearest',
+                    axis: 'x',
+                    intersect: false
+                }
+            }
+        });
+    }
+});
+</script>
 @endpush
 @endsection

@@ -24,14 +24,14 @@ class Kernel extends ConsoleKernel
                  });
 
         // Envoi des relances automatiques tous les jours à 09h00
-        $schedule->command('boxibox:send-reminders')
+        $schedule->command('rappels:send-automatic')
                  ->dailyAt('09:00')
                  ->withoutOverlapping()
                  ->onSuccess(function () {
-                     \Log::info('Relances automatiques traitées');
+                     \Log::info('Relances automatiques traitées avec succès');
                  })
                  ->onFailure(function () {
-                     \Log::error('Échec du traitement des relances');
+                     \Log::error('Échec du traitement des relances automatiques');
                  });
 
         // Génération des fichiers SEPA tous les 15 du mois à 10h00

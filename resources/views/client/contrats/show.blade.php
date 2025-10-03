@@ -134,16 +134,18 @@
                         <tr>
                             <td><strong>{{ $facture->numero_facture }}</strong></td>
                             <td>{{ $facture->date_emission->format('d/m/Y') }}</td>
-                            <td>{{ number_format($facture->montant_total_ht, 2) }} €</td>
-                            <td><strong>{{ number_format($facture->montant_total_ttc, 2) }} €</strong></td>
+                            <td>{{ number_format($facture->montant_ht, 2) }} €</td>
+                            <td><strong>{{ number_format($facture->montant_ttc, 2) }} €</strong></td>
                             <td>{{ $facture->date_echeance->format('d/m/Y') }}</td>
                             <td>
-                                @if($facture->statut == 'paye')
+                                @if($facture->statut == 'payee')
                                     <span class="badge bg-success">Payée</span>
-                                @elseif($facture->statut == 'impaye')
-                                    <span class="badge bg-danger">Impayée</span>
+                                @elseif($facture->statut == 'en_retard')
+                                    <span class="badge bg-danger">En retard</span>
+                                @elseif($facture->statut == 'envoyee')
+                                    <span class="badge bg-warning">Envoyée</span>
                                 @else
-                                    <span class="badge bg-warning">En attente</span>
+                                    <span class="badge bg-info">{{ ucfirst($facture->statut) }}</span>
                                 @endif
                             </td>
                             <td>

@@ -9,9 +9,11 @@ use App\Models\Service;
 use App\Models\ContratService;
 use App\Models\Facture;
 use App\Models\FactureLigne;
+use App\Models\Famille;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
 
 class ContratController extends Controller
 {
@@ -77,6 +79,15 @@ class ContratController extends Controller
             'ca_mensuel' => Contrat::where('statut', 'actif')->sum('prix_mensuel'),
         ];
 
+        // Si requête Inertia, retourner Inertia
+        if ($request->header('X-Inertia')) {
+            return Inertia::render('Admin/ContratsManage', [
+                'contrats' => $contrats,
+                'stats' => $stats,
+                'queryParams' => $request->only(['search', 'statut', 'client_id', 'duree_type', 'date_debut', 'date_fin'])
+            ]);
+        }
+
         return view('contrats.index', compact('contrats', 'stats'));
     }
 
@@ -87,7 +98,26 @@ class ContratController extends Controller
             $client = Client::find($request->client_id);
         }
 
-        $clients = Client::where('is_active', true)->get();
+        $clients = Client::where('is_active', true)
+            ->select('id', 'prenom', 'nom', 'email', 'telephone', 'adresse', 'type_client')
+            ->orderBy('nom')
+            ->get();
+
+        $boxes = Box::with('famille', 'emplacement')
+            ->select('id', 'numero', 'surface', 'volume', 'tarif_mensuel', 'statut', 'famille_id', 'emplacement_id')
+            ->get();
+
+        $familles = Famille::select('id', 'nom', 'couleur')->get();
+
+        // Si requête Inertia, retourner Inertia
+        if ($request->header('X-Inertia')) {
+            return Inertia::render('Admin/ContratCreate', [
+                'clients' => $clients,
+                'boxes' => $boxes,
+                'familles' => $familles
+            ]);
+        }
+
         $boxesLibres = Box::libre()->with('famille', 'emplacement')->get();
         $services = Service::actif()->get();
 

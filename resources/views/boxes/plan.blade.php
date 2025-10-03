@@ -172,7 +172,7 @@
                                             height: {{ max(40, min(100, $box['surface'] * 8)) }}px;">
 
                                     <div class="box-content h-100 d-flex flex-column justify-content-center align-items-center text-white rounded shadow-sm cursor-pointer"
-                                         style="background-color: {{ $this->getBoxColor($box['statut']) }}; font-size: 0.8rem;">
+                                         style="background-color: {{ getBoxColor($box['statut']) }}; font-size: 0.8rem;">
 
                                         <!-- Numéro de box -->
                                         <div class="fw-bold">{{ $box['numero'] }}</div>
@@ -189,7 +189,7 @@
 
                                         <!-- Indicateur de statut -->
                                         <div class="position-absolute top-0 end-0 m-1">
-                                            <i class="fas {{ $this->getStatusIcon($box['statut']) }}" style="font-size: 0.7rem;"></i>
+                                            <i class="fas {{ getStatusIcon($box['statut']) }}" style="font-size: 0.7rem;"></i>
                                         </div>
                                     </div>
 
@@ -198,7 +198,7 @@
                                          style="z-index: 1000; min-width: 300px; left: 100%; margin-left: 10px; top: 0;">
                                         <div class="d-flex justify-content-between align-items-start mb-2">
                                             <h6 class="mb-0 text-dark">Box {{ $box['numero'] }}</h6>
-                                            <span class="badge" style="background-color: {{ $this->getBoxColor($box['statut']) }}">
+                                            <span class="badge" style="background-color: {{ getBoxColor($box['statut']) }}">
                                                 {{ ucfirst($box['statut']) }}
                                             </span>
                                         </div>
@@ -852,28 +852,5 @@ document.addEventListener('DOMContentLoaded', () => {
     z-index: 100;
 }
 
-@php
-function getBoxColor($statut) {
-    return match($statut) {
-        'libre' => '#28a745',
-        'occupe' => '#dc3545',
-        'reserve' => '#ffc107',
-        'maintenance' => '#fd7e14',
-        'hors_service' => '#6c757d',
-        default => '#6c757d'
-    };
-}
-
-function getStatusIcon($statut) {
-    return match($statut) {
-        'libre' => 'fa-unlock',
-        'occupe' => 'fa-lock',
-        'reserve' => 'fa-clock',
-        'maintenance' => 'fa-tools',
-        'hors_service' => 'fa-ban',
-        default => 'fa-question'
-    };
-}
-@endphp
 </style>
 @endpush

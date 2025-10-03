@@ -11,7 +11,7 @@
 <!-- Statistiques -->
 <div class="row mb-4">
     <div class="col-md-3 mb-3">
-        <div class="card border-start border-primary border-4">
+        <div class="card stat-card border-start border-primary border-4" data-aos="fade-up" data-aos-delay="0">
             <div class="card-body">
                 <div class="d-flex align-items-center">
                     <div class="flex-shrink-0">
@@ -26,7 +26,7 @@
         </div>
     </div>
     <div class="col-md-3 mb-3">
-        <div class="card border-start border-success border-4">
+        <div class="card stat-card border-start border-success border-4" data-aos="fade-up" data-aos-delay="100">
             <div class="card-body">
                 <div class="d-flex align-items-center">
                     <div class="flex-shrink-0">
@@ -41,7 +41,7 @@
         </div>
     </div>
     <div class="col-md-3 mb-3">
-        <div class="card border-start border-danger border-4">
+        <div class="card stat-card border-start border-danger border-4" data-aos="fade-up" data-aos-delay="200">
             <div class="card-body">
                 <div class="d-flex align-items-center">
                     <div class="flex-shrink-0">
@@ -56,7 +56,7 @@
         </div>
     </div>
     <div class="col-md-3 mb-3">
-        <div class="card border-start border-warning border-4">
+        <div class="card stat-card border-start border-warning border-4" data-aos="fade-up" data-aos-delay="300">
             <div class="card-body">
                 <div class="d-flex align-items-center">
                     <div class="flex-shrink-0">
@@ -126,7 +126,7 @@
     </div>
     <div class="card-body p-0">
         <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
+            <table id="facturesTable" class="table table-hover align-middle mb-0">
                 <thead class="table-light">
                     <tr>
                         <th>Type</th>
@@ -176,12 +176,12 @@
                                 <span class="text-muted">N/A</span>
                             @endif
                         </td>
-                        <td class="text-end">{{ number_format($facture->montant_total_ht, 2) }} €</td>
+                        <td class="text-end">{{ number_format($facture->montant_ht, 2) }} €</td>
                         <td class="text-end">
                             <small class="text-muted">{{ number_format($facture->montant_tva, 2) }} €</small>
                         </td>
                         <td class="text-end">
-                            <strong class="text-dark">{{ number_format($facture->montant_total_ttc, 2) }} €</strong>
+                            <strong class="text-dark">{{ number_format($facture->montant_ttc, 2) }} €</strong>
                         </td>
                         <td>
                             {{ $facture->date_echeance->format('d/m/Y') }}
@@ -290,6 +290,34 @@
 .table-danger {
     background-color: rgba(220, 53, 69, 0.1);
 }
+
+.stat-card {
+    opacity: 0;
+}
 </style>
+@endpush
+
+@push('scripts')
+<script>
+$(document).ready(function() {
+    // Initialize DataTables for factures table
+    $('#facturesTable').DataTable({
+        responsive: true,
+        order: [[2, 'desc']], // Trier par date d'émission
+        columnDefs: [
+            { orderable: false, targets: [0, 9] } // Désactiver tri pour type et actions
+        ],
+        pageLength: 25,
+        dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>' +
+             '<"row"<"col-sm-12"tr>>' +
+             '<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>'
+    });
+
+    // Animate stats cards on load
+    $('.stat-card').each(function(index) {
+        $(this).delay(100 * index).animate({opacity: 1}, 500);
+    });
+});
+</script>
 @endpush
 @endsection
