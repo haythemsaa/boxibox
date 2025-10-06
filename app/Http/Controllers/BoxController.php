@@ -99,7 +99,7 @@ class BoxController extends Controller
                     $data['famille'] = [
                         'id' => $box->famille->id,
                         'nom' => $box->famille->nom,
-                        'couleur' => $box->famille->couleur ?? '#6c757d',
+                        'couleur' => $box->famille->couleur_plan ?? '#6c757d',
                     ];
                 }
 
@@ -169,7 +169,7 @@ class BoxController extends Controller
                     'plan_height' => $box->plan_height ?? 80,
                     'famille' => $box->famille ? [
                         'nom' => $box->famille->nom,
-                        'couleur' => $box->famille->couleur ?? '#6c757d',
+                        'couleur' => $box->famille->couleur_plan ?? '#6c757d',
                     ] : null,
                     'emplacement' => $box->emplacement ? [
                         'nom' => $box->emplacement->nom,
@@ -216,7 +216,7 @@ class BoxController extends Controller
                     'plan_height' => $box->plan_height ?? 80,
                     'famille' => $box->famille ? [
                         'nom' => $box->famille->nom,
-                        'couleur' => $box->famille->couleur ?? '#6c757d',
+                        'couleur' => $box->famille->couleur_plan ?? '#6c757d',
                     ] : null,
                     'emplacement' => $box->emplacement ? [
                         'nom' => $box->emplacement->nom,

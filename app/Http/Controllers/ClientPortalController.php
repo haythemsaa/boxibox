@@ -710,7 +710,7 @@ class ClientPortalController extends Controller
                     $data['famille'] = [
                         'id' => $box->famille->id,
                         'nom' => $box->famille->nom,
-                        'couleur' => $box->famille->couleur ?? '#6c757d',
+                        'couleur' => $box->famille->couleur_plan ?? '#6c757d',
                     ];
                 }
 

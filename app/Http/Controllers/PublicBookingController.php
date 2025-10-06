@@ -71,7 +71,7 @@ class PublicBookingController extends Controller
         $famille = $box->famille;
 
         // Calcul du tarif (prix de base de la famille)
-        $tarifMensuel = $famille->tarif_base ?? 0;
+        $tarifMensuel = $famille->prix_base ?? 0;
 
         return view('public.booking.form', compact('box', 'famille', 'tarifMensuel'));
     }
@@ -142,7 +142,7 @@ class PublicBookingController extends Controller
                 'date_debut' => $dateDebut,
                 'date_fin' => $dateFin,
                 'date_signature' => now(),
-                'prix_mensuel' => $box->famille->tarif_base ?? 0,
+                'prix_mensuel' => $box->famille->prix_base ?? 0,
                 'statut' => 'en_attente', // En attente de paiement
                 'duree_mois' => $validated['duree_mois'],
                 'mode_paiement' => $validated['mode_paiement'],
@@ -235,7 +235,7 @@ class PublicBookingController extends Controller
         $dureeMois = $request->input('duree_mois', 1);
 
         $box = Box::findOrFail($boxId);
-        $tarifBase = $box->famille->tarif_base ?? 0;
+        $tarifBase = $box->famille->prix_base ?? 0;
 
         // Calcul avec réduction selon durée
         $reduction = 0;
