@@ -9,7 +9,7 @@ use App\Models\Service;
 use App\Models\ContratService;
 use App\Models\Facture;
 use App\Models\FactureLigne;
-use App\Models\Famille;
+use App\Models\BoxFamille;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -107,7 +107,7 @@ class ContratController extends Controller
             ->select('id', 'numero', 'surface', 'volume', 'prix_mensuel', 'statut', 'famille_id', 'emplacement_id')
             ->get();
 
-        $familles = Famille::select('id', 'nom', 'couleur')->get();
+        $familles = BoxFamille::select('id', 'nom', 'couleur')->get();
 
         // Si requête Inertia, retourner Inertia
         if ($request->header('X-Inertia')) {
