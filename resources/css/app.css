@@ -1,4 +1,5 @@
 /* Application CSS */
+@import './dark-mode.css';
 
 body {
     font-family: 'Figtree', sans-serif;

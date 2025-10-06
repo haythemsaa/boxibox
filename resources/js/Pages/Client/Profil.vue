@@ -30,12 +30,15 @@
                                 <input
                                     type="email"
                                     v-model="form.email"
+                                    @blur="v$.form.email.$touch"
                                     class="form-control"
-                                    :class="{ 'is-invalid': errors.email }"
+                                    :class="getValidationClass('email')"
                                     id="email"
-                                    required
                                 >
-                                <div v-if="errors.email" class="invalid-feedback">{{ errors.email }}</div>
+                                <div v-if="getErrorMessage('email')" class="invalid-feedback">
+                                    {{ getErrorMessage('email') }}
+                                </div>
+                                <div v-else-if="errors.email" class="invalid-feedback">{{ errors.email }}</div>
                             </div>
 
                             <div class="row mb-3">
@@ -44,22 +47,32 @@
                                     <input
                                         type="text"
                                         v-model="form.telephone"
+                                        @blur="v$.form.telephone.$touch"
                                         class="form-control"
-                                        :class="{ 'is-invalid': errors.telephone }"
+                                        :class="getValidationClass('telephone')"
                                         id="telephone"
+                                        placeholder="Ex: 01 23 45 67 89"
                                     >
-                                    <div v-if="errors.telephone" class="invalid-feedback">{{ errors.telephone }}</div>
+                                    <div v-if="getErrorMessage('telephone')" class="invalid-feedback">
+                                        {{ getErrorMessage('telephone') }}
+                                    </div>
+                                    <div v-else-if="errors.telephone" class="invalid-feedback">{{ errors.telephone }}</div>
                                 </div>
                                 <div class="col-md-6">
                                     <label for="mobile" class="form-label">Mobile</label>
                                     <input
                                         type="text"
                                         v-model="form.mobile"
+                                        @blur="v$.form.mobile.$touch"
                                         class="form-control"
-                                        :class="{ 'is-invalid': errors.mobile }"
+                                        :class="getValidationClass('mobile')"
                                         id="mobile"
+                                        placeholder="Ex: 06 12 34 56 78"
                                     >
-                                    <div v-if="errors.mobile" class="invalid-feedback">{{ errors.mobile }}</div>
+                                    <div v-if="getErrorMessage('mobile')" class="invalid-feedback">
+                                        {{ getErrorMessage('mobile') }}
+                                    </div>
+                                    <div v-else-if="errors.mobile" class="invalid-feedback">{{ errors.mobile }}</div>
                                 </div>
                             </div>
 
@@ -67,12 +80,17 @@
                                 <label for="adresse" class="form-label">Adresse</label>
                                 <textarea
                                     v-model="form.adresse"
+                                    @blur="v$.form.adresse.$touch"
                                     class="form-control"
-                                    :class="{ 'is-invalid': errors.adresse }"
+                                    :class="getValidationClass('adresse')"
                                     id="adresse"
                                     rows="2"
+                                    placeholder="Numéro et nom de rue"
                                 ></textarea>
-                                <div v-if="errors.adresse" class="invalid-feedback">{{ errors.adresse }}</div>
+                                <div v-if="getErrorMessage('adresse')" class="invalid-feedback">
+                                    {{ getErrorMessage('adresse') }}
+                                </div>
+                                <div v-else-if="errors.adresse" class="invalid-feedback">{{ errors.adresse }}</div>
                             </div>
 
                             <div class="row mb-3">
@@ -81,33 +99,48 @@
                                     <input
                                         type="text"
                                         v-model="form.code_postal"
+                                        @blur="v$.form.code_postal.$touch"
                                         class="form-control"
-                                        :class="{ 'is-invalid': errors.code_postal }"
+                                        :class="getValidationClass('code_postal')"
                                         id="code_postal"
+                                        placeholder="75001"
                                     >
-                                    <div v-if="errors.code_postal" class="invalid-feedback">{{ errors.code_postal }}</div>
+                                    <div v-if="getErrorMessage('code_postal')" class="invalid-feedback">
+                                        {{ getErrorMessage('code_postal') }}
+                                    </div>
+                                    <div v-else-if="errors.code_postal" class="invalid-feedback">{{ errors.code_postal }}</div>
                                 </div>
                                 <div class="col-md-5">
                                     <label for="ville" class="form-label">Ville</label>
                                     <input
                                         type="text"
                                         v-model="form.ville"
+                                        @blur="v$.form.ville.$touch"
                                         class="form-control"
-                                        :class="{ 'is-invalid': errors.ville }"
+                                        :class="getValidationClass('ville')"
                                         id="ville"
+                                        placeholder="Paris"
                                     >
-                                    <div v-if="errors.ville" class="invalid-feedback">{{ errors.ville }}</div>
+                                    <div v-if="getErrorMessage('ville')" class="invalid-feedback">
+                                        {{ getErrorMessage('ville') }}
+                                    </div>
+                                    <div v-else-if="errors.ville" class="invalid-feedback">{{ errors.ville }}</div>
                                 </div>
                                 <div class="col-md-3">
                                     <label for="pays" class="form-label">Pays</label>
                                     <input
                                         type="text"
                                         v-model="form.pays"
+                                        @blur="v$.form.pays.$touch"
                                         class="form-control"
-                                        :class="{ 'is-invalid': errors.pays }"
+                                        :class="getValidationClass('pays')"
                                         id="pays"
+                                        placeholder="France"
                                     >
-                                    <div v-if="errors.pays" class="invalid-feedback">{{ errors.pays }}</div>
+                                    <div v-if="getErrorMessage('pays')" class="invalid-feedback">
+                                        {{ getErrorMessage('pays') }}
+                                    </div>
+                                    <div v-else-if="errors.pays" class="invalid-feedback">{{ errors.pays }}</div>
                                 </div>
                             </div>
 
@@ -206,6 +239,8 @@
 <script>
 import ClientLayout from '@/Layouts/ClientLayout.vue';
 import { router } from '@inertiajs/vue3';
+import { useVuelidate } from '@vuelidate/core';
+import { required, email, minLength, maxLength, numeric, helpers } from '@vuelidate/validators';
 
 export default {
     components: {
@@ -227,6 +262,10 @@ export default {
         }
     },
 
+    setup() {
+        return { v$: useVuelidate() };
+    },
+
     data() {
         return {
             processing: false,
@@ -242,16 +281,59 @@ export default {
         };
     },
 
+    validations() {
+        return {
+            form: {
+                email: {
+                    required: helpers.withMessage('L\'email est requis', required),
+                    email: helpers.withMessage('Veuillez entrer un email valide', email),
+                    maxLength: helpers.withMessage('L\'email ne peut pas dépasser 255 caractères', maxLength(255))
+                },
+                telephone: {
+                    minLength: helpers.withMessage('Le téléphone doit contenir au moins 10 caractères', minLength(10)),
+                    maxLength: helpers.withMessage('Le téléphone ne peut pas dépasser 20 caractères', maxLength(20))
+                },
+                mobile: {
+                    minLength: helpers.withMessage('Le mobile doit contenir au moins 10 caractères', minLength(10)),
+                    maxLength: helpers.withMessage('Le mobile ne peut pas dépasser 20 caractères', maxLength(20))
+                },
+                adresse: {
+                    maxLength: helpers.withMessage('L\'adresse ne peut pas dépasser 255 caractères', maxLength(255))
+                },
+                code_postal: {
+                    minLength: helpers.withMessage('Le code postal doit contenir au moins 4 caractères', minLength(4)),
+                    maxLength: helpers.withMessage('Le code postal ne peut pas dépasser 10 caractères', maxLength(10))
+                },
+                ville: {
+                    maxLength: helpers.withMessage('La ville ne peut pas dépasser 100 caractères', maxLength(100))
+                },
+                pays: {
+                    maxLength: helpers.withMessage('Le pays ne peut pas dépasser 100 caractères', maxLength(100))
+                }
+            }
+        };
+    },
+
     methods: {
-        updateProfile() {
+        async updateProfile() {
+            const isValid = await this.v$.$validate();
+
+            if (!isValid) {
+                this.$toast.warning('Veuillez corriger les erreurs dans le formulaire');
+                return;
+            }
+
             this.processing = true;
 
             router.put(route('client.profil.update'), this.form, {
                 onSuccess: () => {
                     this.processing = false;
+                    this.v$.$reset();
+                    this.$toast.success('Profil mis à jour avec succès !');
                 },
-                onError: () => {
+                onError: (errors) => {
                     this.processing = false;
+                    this.$toast.error('Une erreur est survenue lors de la mise à jour');
                 }
             });
         },
@@ -265,6 +347,16 @@ export default {
             if (!date) return '';
             const d = new Date(date);
             return `${d.toLocaleDateString('fr-FR')} ${d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}`;
+        },
+
+        getValidationClass(field) {
+            if (!this.v$.form[field].$dirty) return '';
+            return this.v$.form[field].$error ? 'is-invalid' : 'is-valid';
+        },
+
+        getErrorMessage(field) {
+            if (!this.v$.form[field].$dirty || !this.v$.form[field].$error) return '';
+            return this.v$.form[field].$errors[0].$message;
         }
     }
 };

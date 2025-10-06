@@ -1,0 +1,186 @@
+/* Dark Mode Styles for Boxibox */
+
+/* Variables de couleur */
+:root {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8f9fa;
+    --bg-card: #ffffff;
+    --text-primary: #212529;
+    --text-secondary: #6c757d;
+    --border-color: #dee2e6;
+    --sidebar-bg: #ffffff;
+    --sidebar-hover: #f8f9fa;
+    --sidebar-active: #e7f1ff;
+}
+
+[data-bs-theme="dark"] {
+    --bg-primary: #1a1d20;
+    --bg-secondary: #212529;
+    --bg-card: #2b3035;
+    --text-primary: #f8f9fa;
+    --text-secondary: #adb5bd;
+    --border-color: #495057;
+    --sidebar-bg: #2b3035;
+    --sidebar-hover: #343a40;
+    --sidebar-active: #1e3a5f;
+}
+
+/* Mode sombre global */
+body.dark-mode {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+}
+
+/* Sidebar */
+.dark-mode .sidebar {
+    background-color: var(--sidebar-bg) !important;
+    border-right: 1px solid var(--border-color);
+}
+
+.dark-mode .sidebar .nav-link {
+    color: var(--text-primary);
+}
+
+.dark-mode .sidebar .nav-link:hover {
+    background-color: var(--sidebar-hover);
+}
+
+.dark-mode .sidebar .nav-link.active {
+    background-color: var(--sidebar-active);
+}
+
+.dark-mode .nav-section-title {
+    color: var(--text-secondary);
+}
+
+/* Cards */
+.dark-mode .card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+}
+
+.dark-mode .card-header {
+    background-color: rgba(255, 255, 255, 0.03);
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* Tables */
+.dark-mode .table {
+    color: var(--text-primary);
+    border-color: var(--border-color);
+}
+
+.dark-mode .table-striped > tbody > tr:nth-of-type(odd) > * {
+    --bs-table-accent-bg: rgba(255, 255, 255, 0.03);
+}
+
+.dark-mode .table-hover > tbody > tr:hover > * {
+    --bs-table-hover-bg: rgba(255, 255, 255, 0.05);
+}
+
+/* Forms */
+.dark-mode .form-control,
+.dark-mode .form-select {
+    background-color: var(--bg-secondary);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+.dark-mode .form-control:focus,
+.dark-mode .form-select:focus {
+    background-color: var(--bg-secondary);
+    border-color: #0d6efd;
+    color: var(--text-primary);
+}
+
+.dark-mode .form-control::placeholder {
+    color: var(--text-secondary);
+}
+
+.dark-mode .form-label {
+    color: var(--text-primary);
+}
+
+/* Badges */
+.dark-mode .badge {
+    filter: brightness(1.2);
+}
+
+/* Alerts */
+.dark-mode .alert {
+    filter: brightness(0.9);
+}
+
+/* Dropdown */
+.dark-mode .dropdown-menu {
+    background-color: var(--bg-card);
+    border-color: var(--border-color);
+}
+
+.dark-mode .dropdown-item {
+    color: var(--text-primary);
+}
+
+.dark-mode .dropdown-item:hover {
+    background-color: var(--sidebar-hover);
+}
+
+/* Modal */
+.dark-mode .modal-content {
+    background-color: var(--bg-card);
+    border-color: var(--border-color);
+}
+
+.dark-mode .modal-header,
+.dark-mode .modal-footer {
+    border-color: var(--border-color);
+}
+
+/* Toast */
+.dark-mode .toast {
+    background-color: var(--bg-card);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+.dark-mode .toast-header {
+    background-color: rgba(255, 255, 255, 0.03);
+    border-bottom-color: var(--border-color);
+}
+
+/* Charts */
+.dark-mode canvas {
+    filter: brightness(0.9);
+}
+
+/* Links */
+.dark-mode a:not(.btn):not(.nav-link):not(.dropdown-item) {
+    color: #6ea8fe;
+}
+
+.dark-mode a:not(.btn):not(.nav-link):not(.dropdown-item):hover {
+    color: #9ec5fe;
+}
+
+/* Text colors */
+.dark-mode .text-muted {
+    color: var(--text-secondary) !important;
+}
+
+/* Shadows */
+.dark-mode .shadow,
+.dark-mode .card {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Transition fluide */
+body,
+.card,
+.sidebar,
+.form-control,
+.form-select,
+.dropdown-menu,
+.toast {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}

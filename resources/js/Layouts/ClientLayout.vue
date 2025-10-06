@@ -15,7 +15,10 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav ms-auto">
+                    <ul class="navbar-nav ms-auto align-items-center">
+                        <li class="nav-item me-2">
+                            <DarkModeToggle />
+                        </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown">
                                 <i class="fas fa-user-circle me-1"></i>
@@ -124,16 +127,23 @@
                 </div>
             </div>
         </div>
+
+        <!-- Toast Notifications -->
+        <Toast />
     </div>
 </template>
 
 <script>
 import { Head } from '@inertiajs/vue3';
 import { router } from '@inertiajs/vue3';
+import Toast from '@/Components/Toast.vue';
+import DarkModeToggle from '@/Components/DarkModeToggle.vue';
 
 export default {
     components: {
-        Head
+        Head,
+        Toast,
+        DarkModeToggle
     },
 
     props: {
