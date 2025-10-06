@@ -131,7 +131,7 @@ class ContratController extends Controller
             'box_id' => 'required|exists:boxes,id',
             'date_debut' => 'required|date',
             'date_fin' => 'nullable|date|after:date_debut',
-            'duree_type' => 'required|in:determinee,indeterminee',
+            'duree_type' => 'required|in:determine,indetermine',
             'prix_mensuel' => 'required|numeric|min:0',
             'caution' => 'required|numeric|min:0',
             'frais_dossier' => 'numeric|min:0',

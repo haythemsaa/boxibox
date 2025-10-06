@@ -81,14 +81,14 @@
                                 <label for="duree_type" class="form-label">Type de durée</label>
                                 <select class="form-select @error('duree_type') is-invalid @enderror"
                                         id="duree_type" name="duree_type">
-                                    <option value="indeterminee" {{ old('duree_type', 'indeterminee') == 'indeterminee' ? 'selected' : '' }}>Indéterminée</option>
-                                    <option value="determinee" {{ old('duree_type') == 'determinee' ? 'selected' : '' }}>Déterminée</option>
+                                    <option value="indetermine" {{ old('duree_type', 'indetermine') == 'indetermine' ? 'selected' : '' }}>Indéterminée</option>
+                                    <option value="determine" {{ old('duree_type') == 'determine' ? 'selected' : '' }}>Déterminée</option>
                                 </select>
                                 @error('duree_type')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
-                            <div class="col-md-4" id="date_fin_group" style="display: {{ old('duree_type') == 'determinee' ? 'block' : 'none' }};">
+                            <div class="col-md-4" id="date_fin_group" style="display: {{ old('duree_type') == 'determine' ? 'block' : 'none' }};">
                                 <label for="date_fin" class="form-label">Date de fin</label>
                                 <input type="date" class="form-control @error('date_fin') is-invalid @enderror"
                                        id="date_fin" name="date_fin"
@@ -243,7 +243,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const dateFinGroup = document.getElementById('date_fin_group');
 
     function toggleDateFin() {
-        if (dureeType.value === 'determinee') {
+        if (dureeType.value === 'determine') {
             dateFinGroup.style.display = 'block';
         } else {
             dateFinGroup.style.display = 'none';
