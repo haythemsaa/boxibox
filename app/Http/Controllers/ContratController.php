@@ -232,9 +232,10 @@ class ContratController extends Controller
 
         $contrat->load('services.service');
         $clients = Client::where('is_active', true)->get();
+        $boxes = Box::with('famille', 'emplacement')->get();
         $services = Service::actif()->get();
 
-        return view('contrats.edit', compact('contrat', 'clients', 'services'));
+        return view('contrats.edit', compact('contrat', 'clients', 'boxes', 'services'));
     }
 
     public function update(Request $request, Contrat $contrat)

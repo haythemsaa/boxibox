@@ -123,11 +123,11 @@ class DashboardAdvancedController extends Controller
 
     private function getTopClients()
     {
-        $topClients = Client::select('clients.*')
+        $topClients = Client::select('clients.id', 'clients.prenom', 'clients.nom')
             ->selectRaw('SUM(reglements.montant) as total_ca')
             ->join('factures', 'factures.client_id', '=', 'clients.id')
             ->join('reglements', 'reglements.facture_id', '=', 'factures.id')
-            ->groupBy('clients.id')
+            ->groupBy('clients.id', 'clients.prenom', 'clients.nom')
             ->orderByDesc('total_ca')
             ->limit(5)
             ->get();

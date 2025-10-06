@@ -22,28 +22,42 @@
             height: 100vh;
             width: 250px;
             background: #343a40;
-            padding-top: 20px;
-            padding-bottom: 80px;
             transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .sidebar-content {
+            flex: 1;
             overflow-y: auto;
             overflow-x: hidden;
+            padding-top: 20px;
+            padding-bottom: 20px;
+        }
+
+        .sidebar-footer {
+            flex-shrink: 0;
+            background: #343a40;
+            border-top: 1px solid #495057;
+            padding: 1rem;
         }
 
         /* Personnalisation de la scrollbar */
-        .sidebar::-webkit-scrollbar {
+        .sidebar-content::-webkit-scrollbar {
             width: 8px;
         }
 
-        .sidebar::-webkit-scrollbar-track {
+        .sidebar-content::-webkit-scrollbar-track {
             background: #2c3034;
         }
 
-        .sidebar::-webkit-scrollbar-thumb {
+        .sidebar-content::-webkit-scrollbar-thumb {
             background: #6c757d;
             border-radius: 4px;
         }
 
-        .sidebar::-webkit-scrollbar-thumb:hover {
+        .sidebar-content::-webkit-scrollbar-thumb:hover {
             background: #495057;
         }
 
@@ -95,11 +109,12 @@
 <body>
     <!-- Sidebar -->
     <nav class="sidebar">
-        <div class="text-center text-white mb-4">
-            <h4><i class="fas fa-archive"></i> Boxibox</h4>
-        </div>
+        <div class="sidebar-content">
+            <div class="text-center text-white mb-4">
+                <h4><i class="fas fa-archive"></i> Boxibox</h4>
+            </div>
 
-        <ul class="nav flex-column">
+            <ul class="nav flex-column">
             <li class="nav-item">
                 <a class="nav-link <?php echo e(request()->routeIs('dashboard') ? 'active' : ''); ?>" href="<?php echo e(route('dashboard')); ?>">
                     <i class="fas fa-tachometer-alt me-2"></i> Dashboard
@@ -269,10 +284,11 @@
                 </a>
             </li>
             <?php endif; ?>
-        </ul>
+            </ul>
+        </div>
 
         <!-- User Menu -->
-        <div class="position-absolute bottom-0 w-100 p-3">
+        <div class="sidebar-footer">
             <div class="d-flex align-items-center justify-content-between mb-2">
                 <!-- Cloche de notifications -->
                 <?php echo $__env->make('layouts.notification-bell', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>

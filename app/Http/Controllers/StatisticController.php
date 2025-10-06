@@ -21,10 +21,8 @@ class StatisticController extends Controller
 
     public function index()
     {
-        $stats = $this->calculateStatistics();
-        $chartData = $this->getChartData();
-
-        return view('admin.statistics.index', compact('stats', 'chartData'));
+        // Redirection vers le dashboard avancé qui contient les statistiques
+        return redirect()->route('admin.dashboard.advanced');
     }
 
     private function calculateStatistics()
@@ -52,12 +50,12 @@ class StatisticController extends Controller
             // Statistiques financières
             'ca_mensuel' => Facture::where('statut', 'payée')
                 ->whereMonth('created_at', $currentDate->month)
-                ->sum('montant_total'),
+                ->sum('montant_ttc'),
             'ca_annuel' => Facture::where('statut', 'payée')
                 ->whereYear('created_at', $currentDate->year)
-                ->sum('montant_total'),
-            'factures_impayees' => Facture::where('statut', 'impayée')->sum('montant_total'),
-            'factures_en_attente' => Facture::where('statut', 'en_attente')->sum('montant_total'),
+                ->sum('montant_ttc'),
+            'factures_impayees' => Facture::where('statut', 'impayée')->sum('montant_ttc'),
+            'factures_en_attente' => Facture::where('statut', 'en_attente')->sum('montant_ttc'),
 
             // Taux de conversion
             'taux_conversion' => $this->calculateConversionRate(),
@@ -65,9 +63,10 @@ class StatisticController extends Controller
             // Taux d'occupation
             'taux_occupation' => $this->calculateOccupancyRate(),
 
-            // Top catégories de boxes
-            'top_categories' => Box::select('categorie', DB::raw('count(*) as count'))
-                ->groupBy('categorie')
+            // Top familles de boxes
+            'top_categories' => Box::select('box_familles.nom', DB::raw('count(*) as count'))
+                ->join('box_familles', 'boxes.famille_id', '=', 'box_familles.id')
+                ->groupBy('box_familles.id', 'box_familles.nom')
                 ->orderByDesc('count')
                 ->limit(5)
                 ->get(),
@@ -118,7 +117,7 @@ class StatisticController extends Controller
             $revenue = Facture::where('statut', 'payée')
                 ->whereYear('created_at', $date->year)
                 ->whereMonth('created_at', $date->month)
-                ->sum('montant_total');
+                ->sum('montant_ttc');
 
             $revenues[] = $revenue;
             $labels[] = $date->format('M Y');
@@ -180,7 +179,7 @@ class StatisticController extends Controller
         return Facture::select(
                 DB::raw('DATE(created_at) as date'),
                 DB::raw('COUNT(*) as count'),
-                DB::raw('SUM(montant_total) as total')
+                DB::raw('SUM(montant_ttc) as total')
             )
             ->where('created_at', '>=', Carbon::now()->subDays(30))
             ->groupBy('date')
