@@ -73,7 +73,7 @@
                         </td>
                         <td>
                             @if($contrat->box->famille)
-                                <span class="badge" style="background-color: {{ $contrat->box->famille->couleur ?? '#6c757d' }}">
+                                <span class="badge" style="background-color: {{ $contrat->box->famille->couleur_plan ?? '#6c757d' }}">
                                     {{ $contrat->box->famille->nom }}
                                 </span>
                             @else

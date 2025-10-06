@@ -89,7 +89,7 @@
                             <small>Surface</small>
                         </div>
                         <div>
-                            <div class="h5 mb-0">{{ number_format($famille->tarif_base ?? 0, 2) }} €</div>
+                            <div class="h5 mb-0">{{ number_format($famille->prix_base ?? 0, 2) }} €</div>
                             <small>Par mois</small>
                         </div>
                         <div>
@@ -231,26 +231,26 @@
                             <tr>
                                 <td>1 mois</td>
                                 <td>-</td>
-                                <td>{{ number_format($famille->tarif_base ?? 0, 2) }} €</td>
-                                <td>{{ number_format($famille->tarif_base ?? 0, 2) }} €</td>
+                                <td>{{ number_format($famille->prix_base ?? 0, 2) }} €</td>
+                                <td>{{ number_format($famille->prix_base ?? 0, 2) }} €</td>
                             </tr>
                             <tr>
                                 <td>3 mois</td>
                                 <td class="text-success"><strong>-5%</strong></td>
-                                <td>{{ number_format(($famille->tarif_base ?? 0) * 0.95, 2) }} €</td>
-                                <td>{{ number_format(($famille->tarif_base ?? 0) * 0.95 * 3, 2) }} €</td>
+                                <td>{{ number_format(($famille->prix_base ?? 0) * 0.95, 2) }} €</td>
+                                <td>{{ number_format(($famille->prix_base ?? 0) * 0.95 * 3, 2) }} €</td>
                             </tr>
                             <tr>
                                 <td>6 mois</td>
                                 <td class="text-success"><strong>-10%</strong></td>
-                                <td>{{ number_format(($famille->tarif_base ?? 0) * 0.90, 2) }} €</td>
-                                <td>{{ number_format(($famille->tarif_base ?? 0) * 0.90 * 6, 2) }} €</td>
+                                <td>{{ number_format(($famille->prix_base ?? 0) * 0.90, 2) }} €</td>
+                                <td>{{ number_format(($famille->prix_base ?? 0) * 0.90 * 6, 2) }} €</td>
                             </tr>
                             <tr class="table-success">
                                 <td><strong>12 mois</strong></td>
                                 <td class="text-success"><strong>-15%</strong></td>
-                                <td><strong>{{ number_format(($famille->tarif_base ?? 0) * 0.85, 2) }} €</strong></td>
-                                <td><strong>{{ number_format(($famille->tarif_base ?? 0) * 0.85 * 12, 2) }} €</strong></td>
+                                <td><strong>{{ number_format(($famille->prix_base ?? 0) * 0.85, 2) }} €</strong></td>
+                                <td><strong>{{ number_format(($famille->prix_base ?? 0) * 0.85 * 12, 2) }} €</strong></td>
                             </tr>
                         </tbody>
                     </table>

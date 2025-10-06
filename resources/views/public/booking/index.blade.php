@@ -189,7 +189,7 @@
 
                             <div class="text-center mb-3">
                                 <div class="price-tag">
-                                    {{ number_format($famille->tarif_base ?? 0, 2) }} €<small>/mois</small>
+                                    {{ number_format($famille->prix_base ?? 0, 2) }} €<small>/mois</small>
                                 </div>
                             </div>
 

@@ -134,7 +134,7 @@
                             <td><strong>{{ $box->numero }}</strong></td>
                             <td>
                                 @if($box->famille)
-                                    <span class="badge" style="background-color: {{ $box->famille->couleur ?? '#6c757d' }}">
+                                    <span class="badge" style="background-color: {{ $box->famille->couleur_plan ?? '#6c757d' }}">
                                         {{ $box->famille->nom }}
                                     </span>
                                 @else
