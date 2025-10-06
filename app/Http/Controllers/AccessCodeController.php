@@ -84,7 +84,8 @@ class AccessCodeController extends Controller
                 $validated['code_pin'] = AccessCode::generateUniquePinCode();
             }
 
-            $validated['tenant_id'] = auth()->user()->tenant_id;
+            // Définir tenant_id : utiliser celui de l'utilisateur ou 1 par défaut
+            $validated['tenant_id'] = auth()->user()->tenant_id ?? 1;
             $validated['statut'] = 'actif';
             $validated['nb_utilisations'] = 0;
             $validated['temporaire'] = $request->boolean('temporaire');
