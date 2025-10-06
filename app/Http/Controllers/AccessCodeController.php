@@ -53,7 +53,7 @@ class AccessCodeController extends Controller
     public function create()
     {
         $clients = Client::orderBy('nom')->get();
-        $boxes = Box::where('statut', 'occupe')->with('client')->orderBy('numero')->get();
+        $boxes = Box::where('statut', 'occupe')->with('contratActif.client')->orderBy('numero')->get();
 
         return view('access-codes.create', compact('clients', 'boxes'));
     }
