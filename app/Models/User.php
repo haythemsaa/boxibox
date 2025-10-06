@@ -49,6 +49,11 @@ class User extends Authenticatable
         return $this->belongsTo(Client::class);
     }
 
+    public function notificationSettings()
+    {
+        return $this->hasOne(NotificationSetting::class);
+    }
+
     // Scopes
 
     public function scopeForTenant($query, $tenantId)

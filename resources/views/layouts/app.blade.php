@@ -23,7 +23,28 @@
             width: 250px;
             background: #343a40;
             padding-top: 20px;
+            padding-bottom: 80px;
             transition: all 0.3s;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        /* Personnalisation de la scrollbar */
+        .sidebar::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: #2c3034;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: #6c757d;
+            border-radius: 4px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: #495057;
         }
 
         .sidebar .nav-link {
@@ -84,6 +105,15 @@
                     <i class="fas fa-tachometer-alt me-2"></i> Dashboard
                 </a>
             </li>
+
+            @can('view_statistics')
+            <li class="nav-item">
+                <a class="nav-link {{ request()->routeIs('admin.dashboard.advanced') ? 'active' : '' }}"
+                   href="{{ route('admin.dashboard.advanced') }}">
+                    <i class="fas fa-chart-line me-2"></i> Dashboard Avancé
+                </a>
+            </li>
+            @endcan
 
             <!-- Gestion Commerciale -->
             <li class="nav-item">
@@ -158,6 +188,21 @@
                 </a>
             </li>
             <li class="nav-item">
+                <a class="nav-link {{ request()->routeIs('access-codes.*') ? 'active' : '' }}" href="{{ route('access-codes.index') }}">
+                    <i class="fas fa-key me-2"></i> Codes d'Accès
+                </a>
+            </li>
+
+            <!-- Designer de Salle - Mise en évidence -->
+            <li class="nav-item">
+                <a class="nav-link {{ request()->routeIs('boxes.floorplan.designer') ? 'active' : '' }}"
+                   href="{{ route('boxes.floorplan.designer') }}"
+                   style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white !important; font-weight: 600; margin: 5px 10px; border-radius: 8px;">
+                    <i class="fas fa-pen-fancy me-2"></i> 🎨 Designer de Salle
+                </a>
+            </li>
+
+            <li class="nav-item">
                 <a class="nav-link {{ request()->routeIs('boxes.plan') ? 'active' : '' }}" href="{{ route('boxes.plan') }}">
                     <i class="fas fa-map me-2"></i> Plan Interactif
                 </a>
@@ -170,11 +215,6 @@
             <li class="nav-item">
                 <a class="nav-link {{ request()->routeIs('boxes.plan.editor.advanced') ? 'active' : '' }}" href="{{ route('boxes.plan.editor.advanced') }}">
                     <i class="fas fa-pencil-ruler me-2"></i> Éditeur Avancé
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link {{ request()->routeIs('boxes.floorplan.designer') ? 'active' : '' }}" href="{{ route('boxes.floorplan.designer') }}">
-                    <i class="fas fa-pen-fancy me-2"></i> Designer de Salle
                 </a>
             </li>
             @endcan
@@ -215,6 +255,11 @@
                     <i class="fas fa-chart-line me-2"></i> Statistiques
                 </a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link {{ request()->routeIs('reports.*') ? 'active' : '' }}" href="{{ route('reports.index') }}">
+                    <i class="fas fa-file-chart-line me-2"></i> Rapports
+                </a>
+            </li>
             @endcan
 
             @can('view_signatures')
@@ -228,12 +273,17 @@
 
         <!-- User Menu -->
         <div class="position-absolute bottom-0 w-100 p-3">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <!-- Cloche de notifications -->
+                @include('layouts.notification-bell')
+            </div>
             <div class="dropdown">
                 <button class="btn btn-outline-light btn-sm dropdown-toggle w-100" type="button" data-bs-toggle="dropdown">
                     <i class="fas fa-user me-2"></i> {{ Auth::user()->name }}
                 </button>
                 <ul class="dropdown-menu">
                     <li><a class="dropdown-item" href="{{ route('profile.edit') }}"><i class="fas fa-cog me-2"></i> Paramètres</a></li>
+                    <li><a class="dropdown-item" href="{{ route('notifications.settings') }}"><i class="fas fa-bell me-2"></i> Notifications</a></li>
                     <li><hr class="dropdown-divider"></li>
                     <li>
                         <form method="POST" action="{{ route('logout') }}">

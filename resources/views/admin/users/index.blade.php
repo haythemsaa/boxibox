@@ -4,7 +4,7 @@
 
 @section('actions')
     @can('create_users')
-        <a href="{{ route('admin.users.create') }}" class="btn btn-primary">
+        <a href="{{ route('users.create') }}" class="btn btn-primary">
             <i class="fas fa-plus"></i> Nouvel utilisateur
         </a>
     @endcan
@@ -96,13 +96,13 @@
                                                 </button>
                                                 <ul class="dropdown-menu">
                                                     <li>
-                                                        <a class="dropdown-item" href="{{ route('admin.users.show', $user) }}">
+                                                        <a class="dropdown-item" href="{{ route('users.show', $user) }}">
                                                             <i class="fas fa-eye"></i> Voir
                                                         </a>
                                                     </li>
                                                     @can('edit_users')
                                                         <li>
-                                                            <a class="dropdown-item" href="{{ route('admin.users.edit', $user) }}">
+                                                            <a class="dropdown-item" href="{{ route('users.edit', $user) }}">
                                                                 <i class="fas fa-edit"></i> Modifier
                                                             </a>
                                                         </li>
@@ -111,7 +111,7 @@
                                                         @if($user->id !== auth()->id())
                                                             <li><hr class="dropdown-divider"></li>
                                                             <li>
-                                                                <form action="{{ route('admin.users.destroy', $user) }}" method="POST" class="d-inline">
+                                                                <form action="{{ route('users.destroy', $user) }}" method="POST" class="d-inline">
                                                                     @csrf
                                                                     @method('DELETE')
                                                                     <button type="submit" class="dropdown-item text-danger"

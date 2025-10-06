@@ -23,7 +23,28 @@
             width: 250px;
             background: #343a40;
             padding-top: 20px;
+            padding-bottom: 80px;
             transition: all 0.3s;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        /* Personnalisation de la scrollbar */
+        .sidebar::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: #2c3034;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: #6c757d;
+            border-radius: 4px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: #495057;
         }
 
         .sidebar .nav-link {
@@ -84,6 +105,15 @@
                     <i class="fas fa-tachometer-alt me-2"></i> Dashboard
                 </a>
             </li>
+
+            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view_statistics')): ?>
+            <li class="nav-item">
+                <a class="nav-link <?php echo e(request()->routeIs('admin.dashboard.advanced') ? 'active' : ''); ?>"
+                   href="<?php echo e(route('admin.dashboard.advanced')); ?>">
+                    <i class="fas fa-chart-line me-2"></i> Dashboard Avancé
+                </a>
+            </li>
+            <?php endif; ?>
 
             <!-- Gestion Commerciale -->
             <li class="nav-item">
@@ -153,8 +183,89 @@
             </li>
             <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view_boxes')): ?>
             <li class="nav-item">
-                <a class="nav-link <?php echo e(request()->routeIs('boxes.*') ? 'active' : ''); ?>" href="<?php echo e(route('boxes.index')); ?>">
-                    <i class="fas fa-th-large me-2"></i> Plan des Boxes
+                <a class="nav-link <?php echo e(request()->routeIs('boxes.index') ? 'active' : ''); ?>" href="<?php echo e(route('boxes.index')); ?>">
+                    <i class="fas fa-th-large me-2"></i> Boxes (Liste)
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link <?php echo e(request()->routeIs('access-codes.*') ? 'active' : ''); ?>" href="<?php echo e(route('access-codes.index')); ?>">
+                    <i class="fas fa-key me-2"></i> Codes d'Accès
+                </a>
+            </li>
+
+            <!-- Designer de Salle - Mise en évidence -->
+            <li class="nav-item">
+                <a class="nav-link <?php echo e(request()->routeIs('boxes.floorplan.designer') ? 'active' : ''); ?>"
+                   href="<?php echo e(route('boxes.floorplan.designer')); ?>"
+                   style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white !important; font-weight: 600; margin: 5px 10px; border-radius: 8px;">
+                    <i class="fas fa-pen-fancy me-2"></i> 🎨 Designer de Salle
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link <?php echo e(request()->routeIs('boxes.plan') ? 'active' : ''); ?>" href="<?php echo e(route('boxes.plan')); ?>">
+                    <i class="fas fa-map me-2"></i> Plan Interactif
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link <?php echo e(request()->routeIs('boxes.plan.editor') ? 'active' : ''); ?>" href="<?php echo e(route('boxes.plan.editor')); ?>">
+                    <i class="fas fa-edit me-2"></i> Éditeur de Plan
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link <?php echo e(request()->routeIs('boxes.plan.editor.advanced') ? 'active' : ''); ?>" href="<?php echo e(route('boxes.plan.editor.advanced')); ?>">
+                    <i class="fas fa-pencil-ruler me-2"></i> Éditeur Avancé
+                </a>
+            </li>
+            <?php endif; ?>
+
+            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view_emplacements')): ?>
+            <li class="nav-item">
+                <a class="nav-link <?php echo e(request()->routeIs('emplacements.*') ? 'active' : ''); ?>" href="<?php echo e(route('emplacements.index')); ?>">
+                    <i class="fas fa-map-marker-alt me-2"></i> Emplacements
+                </a>
+            </li>
+            <?php endif; ?>
+
+            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view_box_familles')): ?>
+            <li class="nav-item">
+                <a class="nav-link <?php echo e(request()->routeIs('box-familles.*') ? 'active' : ''); ?>" href="<?php echo e(route('box-familles.index')); ?>">
+                    <i class="fas fa-tags me-2"></i> Familles de Boxes
+                </a>
+            </li>
+            <?php endif; ?>
+
+            <!-- Administration -->
+            <li class="nav-item">
+                <a class="nav-link text-white-50 small fw-bold text-uppercase mt-3" href="#" style="pointer-events: none;">
+                    Administration
+                </a>
+            </li>
+            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view_users')): ?>
+            <li class="nav-item">
+                <a class="nav-link <?php echo e(request()->routeIs('admin.users.*') ? 'active' : ''); ?>" href="<?php echo e(route('admin.users.index')); ?>">
+                    <i class="fas fa-users-cog me-2"></i> Utilisateurs
+                </a>
+            </li>
+            <?php endif; ?>
+
+            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view_statistics')): ?>
+            <li class="nav-item">
+                <a class="nav-link <?php echo e(request()->routeIs('admin.statistics') ? 'active' : ''); ?>" href="<?php echo e(route('admin.statistics')); ?>">
+                    <i class="fas fa-chart-line me-2"></i> Statistiques
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link <?php echo e(request()->routeIs('reports.*') ? 'active' : ''); ?>" href="<?php echo e(route('reports.index')); ?>">
+                    <i class="fas fa-file-chart-line me-2"></i> Rapports
+                </a>
+            </li>
+            <?php endif; ?>
+
+            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view_signatures')): ?>
+            <li class="nav-item">
+                <a class="nav-link <?php echo e(request()->routeIs('signatures.*') ? 'active' : ''); ?>" href="<?php echo e(route('signatures.index')); ?>">
+                    <i class="fas fa-signature me-2"></i> Signatures
                 </a>
             </li>
             <?php endif; ?>
@@ -162,6 +273,10 @@
 
         <!-- User Menu -->
         <div class="position-absolute bottom-0 w-100 p-3">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <!-- Cloche de notifications -->
+                <?php echo $__env->make('layouts.notification-bell', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
+            </div>
             <div class="dropdown">
                 <button class="btn btn-outline-light btn-sm dropdown-toggle w-100" type="button" data-bs-toggle="dropdown">
                     <i class="fas fa-user me-2"></i> <?php echo e(Auth::user()->name); ?>
@@ -169,6 +284,7 @@
                 </button>
                 <ul class="dropdown-menu">
                     <li><a class="dropdown-item" href="<?php echo e(route('profile.edit')); ?>"><i class="fas fa-cog me-2"></i> Paramètres</a></li>
+                    <li><a class="dropdown-item" href="<?php echo e(route('notifications.settings')); ?>"><i class="fas fa-bell me-2"></i> Notifications</a></li>
                     <li><hr class="dropdown-divider"></li>
                     <li>
                         <form method="POST" action="<?php echo e(route('logout')); ?>">

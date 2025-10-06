@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DashboardAdvancedController;
 use App\Http\Controllers\ProspectController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ContratController;
@@ -30,6 +31,12 @@ Route::get('/', function () {
 Route::middleware('auth')->group(function () {
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/advanced', [DashboardAdvancedController::class, 'index'])
+        ->name('admin.dashboard.advanced')
+        ->middleware('permission:view_statistics');
+    Route::get('/dashboard/advanced/export', [DashboardAdvancedController::class, 'export'])
+        ->name('admin.dashboard.export')
+        ->middleware('permission:view_statistics');
 
     // Profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -249,6 +256,53 @@ Route::prefix('sign')->group(function () {
     Route::get('{token}', [SignatureController::class, 'show'])->name('signatures.show');
     Route::post('{token}', [SignatureController::class, 'sign'])->name('signatures.sign');
     Route::post('{token}/refuse', [SignatureController::class, 'refuse'])->name('signatures.refuse');
+});
+
+// Routes publiques pour la réservation en ligne (ne nécessitent pas d'authentification)
+Route::prefix('reservation')->name('public.booking.')->group(function () {
+    Route::get('/', [App\Http\Controllers\PublicBookingController::class, 'index'])->name('index');
+    Route::get('/famille/{famille}', [App\Http\Controllers\PublicBookingController::class, 'showFamille'])->name('famille');
+    Route::get('/box/{box}', [App\Http\Controllers\PublicBookingController::class, 'bookingForm'])->name('form');
+    Route::post('/box/{box}/reserver', [App\Http\Controllers\PublicBookingController::class, 'processBooking'])->name('process');
+    Route::get('/paiement/{contrat}', [App\Http\Controllers\PublicBookingController::class, 'payment'])->name('payment');
+    Route::get('/confirmation/{contrat}', [App\Http\Controllers\PublicBookingController::class, 'confirmation'])->name('confirmation');
+    Route::post('/api/calculer-prix', [App\Http\Controllers\PublicBookingController::class, 'calculatePrice'])->name('calculate-price');
+});
+
+// Routes pour les notifications (nécessitent authentification)
+Route::middleware(['auth'])->prefix('notifications')->name('notifications.')->group(function () {
+    Route::get('/', [App\Http\Controllers\NotificationController::class, 'index'])->name('index');
+    Route::get('/unread', [App\Http\Controllers\NotificationController::class, 'getUnread'])->name('getUnread');
+    Route::post('/{id}/read', [App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('markAsRead');
+    Route::post('/mark-all-read', [App\Http\Controllers\NotificationController::class, 'markAllAsRead'])->name('markAllAsRead');
+    Route::delete('/{id}', [App\Http\Controllers\NotificationController::class, 'destroy'])->name('destroy');
+    Route::get('/settings', [App\Http\Controllers\NotificationController::class, 'settings'])->name('settings');
+    Route::put('/settings', [App\Http\Controllers\NotificationController::class, 'updateSettings'])->name('updateSettings');
+});
+
+// Routes pour les rapports (nécessitent authentification et permission)
+Route::middleware(['auth'])->prefix('reports')->name('reports.')->group(function () {
+    Route::get('/', [App\Http\Controllers\ReportController::class, 'index'])->name('index')->middleware('permission:view_statistics');
+    Route::get('/financial', [App\Http\Controllers\ReportController::class, 'financial'])->name('financial')->middleware('permission:view_statistics');
+    Route::get('/occupation', [App\Http\Controllers\ReportController::class, 'occupation'])->name('occupation')->middleware('permission:view_statistics');
+    Route::get('/clients', [App\Http\Controllers\ReportController::class, 'clients'])->name('clients')->middleware('permission:view_statistics');
+    Route::get('/access', [App\Http\Controllers\ReportController::class, 'access'])->name('access')->middleware('permission:view_statistics');
+    Route::get('/export-pdf', [App\Http\Controllers\ReportController::class, 'exportPDF'])->name('exportPDF')->middleware('permission:view_statistics');
+    Route::get('/export-excel', [App\Http\Controllers\ReportController::class, 'exportExcel'])->name('exportExcel')->middleware('permission:view_statistics');
+});
+
+// Routes pour la gestion des codes d'accès
+Route::middleware(['auth'])->prefix('access-codes')->name('access-codes.')->group(function () {
+    Route::get('/', [App\Http\Controllers\AccessCodeController::class, 'index'])->name('index')->middleware('permission:view_boxes');
+    Route::get('/create', [App\Http\Controllers\AccessCodeController::class, 'create'])->name('create')->middleware('permission:create_boxes');
+    Route::post('/', [App\Http\Controllers\AccessCodeController::class, 'store'])->name('store')->middleware('permission:create_boxes');
+    Route::get('/{accessCode}', [App\Http\Controllers\AccessCodeController::class, 'show'])->name('show')->middleware('permission:view_boxes');
+    Route::get('/{accessCode}/edit', [App\Http\Controllers\AccessCodeController::class, 'edit'])->name('edit')->middleware('permission:edit_boxes');
+    Route::put('/{accessCode}', [App\Http\Controllers\AccessCodeController::class, 'update'])->name('update')->middleware('permission:edit_boxes');
+    Route::post('/{accessCode}/revoke', [App\Http\Controllers\AccessCodeController::class, 'revoke'])->name('revoke')->middleware('permission:delete_boxes');
+    Route::post('/{accessCode}/suspend', [App\Http\Controllers\AccessCodeController::class, 'suspend'])->name('suspend')->middleware('permission:edit_boxes');
+    Route::post('/{accessCode}/reactivate', [App\Http\Controllers\AccessCodeController::class, 'reactivate'])->name('reactivate')->middleware('permission:edit_boxes');
+    Route::get('/{accessCode}/download-qr', [App\Http\Controllers\AccessCodeController::class, 'downloadQR'])->name('download-qr')->middleware('permission:view_boxes');
 });
 
 require __DIR__.'/auth.php';
