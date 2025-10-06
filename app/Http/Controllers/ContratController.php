@@ -104,7 +104,7 @@ class ContratController extends Controller
             ->get();
 
         $boxes = Box::with('famille', 'emplacement')
-            ->select('id', 'numero', 'surface', 'volume', 'tarif_mensuel', 'statut', 'famille_id', 'emplacement_id')
+            ->select('id', 'numero', 'surface', 'volume', 'prix_mensuel', 'statut', 'famille_id', 'emplacement_id')
             ->get();
 
         $familles = Famille::select('id', 'nom', 'couleur')->get();

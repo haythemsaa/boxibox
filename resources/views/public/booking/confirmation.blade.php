@@ -132,7 +132,7 @@
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <strong>Tarif mensuel :</strong><br>
-                            <span class="text-primary fs-5">{{ number_format($contrat->tarif_mensuel, 2) }} €</span>
+                            <span class="text-primary fs-5">{{ number_format($contrat->prix_mensuel, 2) }} €</span>
                         </div>
                         <div class="col-md-6">
                             <strong>Durée :</strong><br>

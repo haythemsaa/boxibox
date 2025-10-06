@@ -142,7 +142,7 @@ class PublicBookingController extends Controller
                 'date_debut' => $dateDebut,
                 'date_fin' => $dateFin,
                 'date_signature' => now(),
-                'tarif_mensuel' => $box->famille->tarif_base ?? 0,
+                'prix_mensuel' => $box->famille->tarif_base ?? 0,
                 'statut' => 'en_attente', // En attente de paiement
                 'duree_mois' => $validated['duree_mois'],
                 'mode_paiement' => $validated['mode_paiement'],
@@ -155,7 +155,7 @@ class PublicBookingController extends Controller
             ]);
 
             // 4. Créer la première facture
-            $montantHT = $contrat->tarif_mensuel;
+            $montantHT = $contrat->prix_mensuel;
             $tauxTVA = 20; // À adapter selon configuration
             $montantTVA = $montantHT * ($tauxTVA / 100);
             $montantTTC = $montantHT + $montantTVA;
@@ -253,7 +253,7 @@ class PublicBookingController extends Controller
         return response()->json([
             'tarif_base' => $tarifBase,
             'reduction_pct' => $reduction,
-            'tarif_mensuel' => round($tarifMensuel, 2),
+            'prix_mensuel' => round($tarifMensuel, 2),
             'montant_total' => round($montantTotal, 2),
             'duree_mois' => $dureeMois,
         ]);

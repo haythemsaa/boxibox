@@ -54,7 +54,7 @@ class NouvelleReservationNotification extends Notification implements ShouldQueu
             ->line('Client : ' . $client->nom . ' ' . $client->prenom)
             ->line('Box : ' . ($box ? $box->numero : 'N/A'))
             ->line('Contrat : ' . $this->contrat->numero_contrat)
-            ->line('Montant mensuel : ' . number_format($this->contrat->tarif_mensuel, 2) . ' €')
+            ->line('Montant mensuel : ' . number_format($this->contrat->prix_mensuel, 2) . ' €')
             ->action('Voir le contrat', url('/contrats/' . $this->contrat->id))
             ->line('Pensez à valider le contrat et à générer les codes d\'accès.');
     }
