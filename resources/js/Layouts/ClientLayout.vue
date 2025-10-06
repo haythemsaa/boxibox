@@ -19,12 +19,21 @@
                         <li class="nav-item me-2">
                             <DarkModeToggle />
                         </li>
+                        <li class="nav-item me-2">
+                            <NotificationBell :initialNotifications="$page.props.notifications || []" />
+                        </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown">
                                 <i class="fas fa-user-circle me-1"></i>
                                 {{ $page.props.auth?.user?.name || 'Client' }}
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end">
+                                <li>
+                                    <a :href="route('client.profil')" class="dropdown-item">
+                                        <i class="fas fa-user me-2"></i>Mon profil
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
                                 <li>
                                     <form @submit.prevent="logout">
                                         <button type="submit" class="dropdown-item">
@@ -130,6 +139,9 @@
 
         <!-- Toast Notifications -->
         <Toast />
+
+        <!-- Chat Widget -->
+        <ChatWidget :initialMessages="$page.props.chatMessages || []" />
     </div>
 </template>
 
@@ -138,12 +150,16 @@ import { Head } from '@inertiajs/vue3';
 import { router } from '@inertiajs/vue3';
 import Toast from '@/Components/Toast.vue';
 import DarkModeToggle from '@/Components/DarkModeToggle.vue';
+import NotificationBell from '@/Components/NotificationBell.vue';
+import ChatWidget from '@/Components/ChatWidget.vue';
 
 export default {
     components: {
         Head,
         Toast,
-        DarkModeToggle
+        DarkModeToggle,
+        NotificationBell,
+        ChatWidget
     },
 
     props: {

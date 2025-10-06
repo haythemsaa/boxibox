@@ -10,6 +10,8 @@ use App\Models\MandatSepa;
 use App\Models\Client;
 use App\Models\Rappel;
 use App\Models\ClientDocument;
+use App\Models\ClientNotification;
+use App\Models\ChatMessage;
 use App\Services\StatisticsCache;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -55,10 +57,27 @@ class ClientPortalController extends Controller
             ->take(5)
             ->get();
 
+        // Notifications (les 10 dernières pour le badge)
+        $notifications = ClientNotification::where('client_id', $client->id)
+            ->orderBy('created_at', 'desc')
+            ->limit(10)
+            ->get();
+
+        // Messages du chat
+        $chatMessages = ChatMessage::where('client_id', $client->id)
+            ->orderBy('created_at', 'asc')
+            ->get();
+
+        // Activités récentes (simulées pour l'instant - à implémenter plus tard)
+        $recentActivities = [];
+
         return Inertia::render('Client/Dashboard', [
             'stats' => $stats,
             'contratsActifs' => $contratsActifs,
             'dernieresFactures' => $dernieresFactures,
+            'notifications' => $notifications,
+            'chatMessages' => $chatMessages,
+            'recentActivities' => $recentActivities,
         ]);
     }
 

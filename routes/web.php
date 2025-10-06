@@ -16,6 +16,8 @@ use App\Http\Controllers\SettingController;
 use App\Http\Controllers\SignatureController;
 use App\Http\Controllers\SuperAdminController;
 use App\Http\Controllers\ClientPortalController;
+use App\Http\Controllers\Client\ClientNotificationController;
+use App\Http\Controllers\Client\ClientChatController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -212,6 +214,15 @@ Route::middleware('auth')->group(function () {
 
         // Plan des Boxes
         Route::get('box-plan', [ClientPortalController::class, 'boxPlan'])->name('client.boxplan');
+
+        // Notifications
+        Route::get('notifications', [ClientNotificationController::class, 'index'])->name('client.notifications');
+        Route::post('notifications/{notification}/mark-read', [ClientNotificationController::class, 'markRead'])->name('client.notifications.mark-read');
+        Route::post('notifications/mark-all-read', [ClientNotificationController::class, 'markAllRead'])->name('client.notifications.mark-all-read');
+
+        // Chat
+        Route::post('chat/send', [ClientChatController::class, 'send'])->name('client.chat.send');
+        Route::post('chat/mark-all-read', [ClientChatController::class, 'markAllRead'])->name('client.chat.mark-all-read');
     });
 
     // Signatures Électroniques

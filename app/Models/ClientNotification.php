@@ -5,26 +5,27 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ChatMessage extends Model
+class ClientNotification extends Model
 {
     use HasFactory;
 
     protected $fillable = [
         'client_id',
-        'from_client',
+        'type',
+        'titre',
         'message',
+        'lien',
         'lu'
     ];
 
     protected $casts = [
-        'from_client' => 'boolean',
         'lu' => 'boolean',
         'created_at' => 'datetime',
         'updated_at' => 'datetime'
     ];
 
     /**
-     * Get the client that owns the message.
+     * Get the client that owns the notification.
      */
     public function client()
     {
