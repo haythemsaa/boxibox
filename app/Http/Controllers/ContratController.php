@@ -107,7 +107,7 @@ class ContratController extends Controller
             ->select('id', 'numero', 'surface', 'volume', 'prix_mensuel', 'statut', 'famille_id', 'emplacement_id')
             ->get();
 
-        $familles = BoxFamille::select('id', 'nom', 'couleur')->get();
+        $familles = BoxFamille::select('id', 'nom', 'couleur_plan')->get();
 
         // Si requête Inertia, retourner Inertia
         if ($request->header('X-Inertia')) {
