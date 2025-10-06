@@ -9,39 +9,36 @@ use App\Models\Facture;
 use App\Models\Reglement;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 use Carbon\Carbon;
 
 class DashboardAdvancedController extends Controller
 {
     public function index()
     {
-        // KPIs principaux
-        $stats = $this->getKPIs();
+        // Cache les données du dashboard pendant 5 minutes
+        $cacheKey = 'dashboard_advanced_' . auth()->id();
 
-        // Données pour graphique CA
-        $caData = $this->getCAEvolution();
-
-        // Top 5 clients
-        $topClients = $this->getTopClients();
-
-        // Activités récentes
-        $activitesRecentes = $this->getActivitesRecentes();
-
-        // Alertes
-        $alertes = $this->getAlertes();
-
-        // Statut boxes pour graphique
-        $statutBoxes = $this->getStatutBoxes();
+        $dashboardData = Cache::remember($cacheKey, 300, function() {
+            return [
+                'stats' => $this->getKPIs(),
+                'caData' => $this->getCAEvolution(),
+                'topClients' => $this->getTopClients(),
+                'activitesRecentes' => $this->getActivitesRecentes(),
+                'alertes' => $this->getAlertes(),
+                'statutBoxes' => $this->getStatutBoxes()
+            ];
+        });
 
         return view('dashboard.admin_advanced', [
-            'stats' => $stats,
-            'ca_labels' => $caData['labels'],
-            'ca_data' => $caData['data'],
-            'top_clients_labels' => $topClients['labels'],
-            'top_clients_data' => $topClients['data'],
-            'activites_recentes' => $activitesRecentes,
-            'alertes' => $alertes,
-            'statut_boxes_data' => $statutBoxes
+            'stats' => $dashboardData['stats'],
+            'ca_labels' => $dashboardData['caData']['labels'],
+            'ca_data' => $dashboardData['caData']['data'],
+            'top_clients_labels' => $dashboardData['topClients']['labels'],
+            'top_clients_data' => $dashboardData['topClients']['data'],
+            'activites_recentes' => $dashboardData['activitesRecentes'],
+            'alertes' => $dashboardData['alertes'],
+            'statut_boxes_data' => $dashboardData['statutBoxes']
         ]);
     }
 
