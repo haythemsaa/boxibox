@@ -19,10 +19,12 @@
 
 ### 💰 Gestion Financière
 - **Facturation** : Génération automatique avec templates PDF professionnels
-- **Règlements** : Multi-modes (CB, Virement, Espèces, Chèque)
+- **Paiement en ligne** : 💳 **Stripe Checkout intégration complète** (Nouveau!)
+- **Règlements** : Multi-modes (CB, Virement, Espèces, Chèque, Stripe)
 - **SEPA** : Mandats et prélèvements automatiques
 - **Relances** : Système automatisé de rappels de paiement
 - **Reporting** : 4 rapports avancés avec exports Excel/PDF
+- **Webhooks** : Confirmation automatique des paiements Stripe
 
 ### 🔐 Gestion des Accès
 - **Codes PIN** : Génération unique 6 chiffres
@@ -39,15 +41,22 @@
 - **Familles** : Catégorisation et tarification par type
 
 ### 🔔 Notifications & Communication
-- **Temps Réel** : Push navigateur avec cloche + badge
-- **Email** : Templates HTML professionnels
+- **Temps Réel** : 🔥 **WebSockets Laravel Echo + Pusher** (Nouveau!)
+- **Email automatique** : 📧 **Confirmation paiements, notifications admin** (Nouveau!)
+- **Toast modernes** : 🎨 **vue-toastification avec animations** (Nouveau!)
+- **Templates HTML** : Emails responsive et professionnels
 - **SMS** : Intégration Twilio (préparée)
 - **Personnalisation** : Paramètres par utilisateur (types, horaires)
 
-### 👥 Espace Client
+### 👥 Espace Client (Vue.js 3)
 - **Authentification** : Connexion sécurisée avec reset password
-- **Dashboard** : Vue d'ensemble contrats et paiements
+- **Dashboard** : Vue d'ensemble contrats et paiements avec graphiques
 - **Factures** : Consultation et téléchargement PDF
+- **Paiement en ligne** : 💳 **Bouton "Payer en ligne" avec Stripe** (Nouveau!)
+- **Documents** : 📄 **Upload multiple + preview PDF** (Nouveau!)
+- **Profil** : ✅ **Validation Vuelidate complète** (Nouveau!)
+- **SEPA** : Création mandats avec signature électronique
+- **Mode sombre** : 🌙 **Toggle clair/sombre avec persistance** (Nouveau!)
 - **Profil** : Mise à jour informations personnelles
 - **Codes d'accès** : Consultation PIN et QR codes
 
@@ -71,17 +80,22 @@
 - **Queue** : Laravel Queue (async notifications)
 
 ### Frontend
-- **Framework** : Vue.js 3.x (Composition API)
+- **Framework** : Vue.js 3.3 (Composition API)
 - **Meta-framework** : Inertia.js 1.x
-- **Build Tool** : Vite 4.x
-- **UI** : Bootstrap 5 + Font Awesome 6
+- **Build Tool** : Vite 7.x
+- **UI** : Bootstrap 5.3+ (avec dark mode)
 - **Charts** : Chart.js 4.x
+- **Validation** : ✅ **Vuelidate + validateurs métier** (Nouveau!)
+- **Notifications** : 🎨 **vue-toastification** (Nouveau!)
+- **WebSockets** : 🔥 **Laravel Echo + Pusher** (Nouveau!)
 
 ### Packages & Libraries
 - **PDF** : barryvdh/laravel-dompdf
 - **Excel** : maatwebsite/excel
 - **QR Codes** : simplesoftwareio/simple-qrcode
 - **Signatures** : signature_pad.js
+- **Paiement** : 💳 **stripe/stripe-php v18** (Nouveau!)
+- **Broadcasting** : pusher/pusher-php-server
 
 ---
 
