@@ -34,7 +34,8 @@
       "Bash(git remote add:*)",
       "Bash(git branch:*)",
       "Bash(git push:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(C:wamp64binphpphp8.1.0composer.cmd require pusher/pusher-php-server)"
     ],
     "deny": [],
     "ask": []

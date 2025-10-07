@@ -241,6 +241,7 @@ import ClientLayout from '@/Layouts/ClientLayout.vue';
 import { router } from '@inertiajs/vue3';
 import { useVuelidate } from '@vuelidate/core';
 import { required, email, minLength, maxLength, numeric, helpers } from '@vuelidate/validators';
+import { useToast } from '@/composables/useToast';
 
 export default {
     components: {
@@ -263,7 +264,8 @@ export default {
     },
 
     setup() {
-        return { v$: useVuelidate() };
+        const toast = useToast();
+        return { v$: useVuelidate(), toast };
     },
 
     data() {
@@ -319,7 +321,7 @@ export default {
             const isValid = await this.v$.$validate();
 
             if (!isValid) {
-                this.$toast.warning('Veuillez corriger les erreurs dans le formulaire');
+                this.toast.validationError('Veuillez corriger les erreurs dans le formulaire');
                 return;
             }
 
@@ -329,11 +331,11 @@ export default {
                 onSuccess: () => {
                     this.processing = false;
                     this.v$.$reset();
-                    this.$toast.success('Profil mis à jour avec succès !');
+                    this.toast.saveSuccess('Profil');
                 },
                 onError: (errors) => {
                     this.processing = false;
-                    this.$toast.error('Une erreur est survenue lors de la mise à jour');
+                    this.toast.error('Une erreur est survenue lors de la mise à jour');
                 }
             });
         },

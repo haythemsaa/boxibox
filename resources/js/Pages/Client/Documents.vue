@@ -34,12 +34,13 @@
                                 ref="fileInput"
                                 class="d-none"
                                 id="document"
-                                accept=".pdf"
+                                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                                multiple
                                 @change="handleFileSelect"
                             >
                             <p class="text-muted small mt-3 mb-0">
                                 <i class="fas fa-info-circle me-1"></i>
-                                Format accepté : PDF uniquement | Taille maximale : 20 Mo
+                                Formats : PDF, Word, Images | Taille max : 20 Mo par fichier | Upload multiple supporté
                             </p>
                         </div>
                     </div>
@@ -60,25 +61,30 @@
                         <div v-if="errors.nom_document" class="invalid-feedback">{{ errors.nom_document }}</div>
                     </div>
 
-                    <!-- Aperçu du fichier sélectionné -->
-                    <div v-if="selectedFile" class="alert alert-info">
-                        <div class="d-flex align-items-center">
-                            <i class="fas fa-file-pdf fa-2x text-danger me-3"></i>
-                            <div class="flex-grow-1">
-                                <strong>{{ selectedFile.name }}</strong>
-                                <br>
-                                <small class="text-muted">{{ formatFileSize(selectedFile.size) }}</small>
+                    <!-- Aperçu des fichiers sélectionnés -->
+                    <div v-if="selectedFiles.length > 0" class="mt-3">
+                        <h6>Fichiers sélectionnés ({{ selectedFiles.length }})</h6>
+                        <div class="list-group">
+                            <div v-for="(file, index) in selectedFiles" :key="index" class="list-group-item">
+                                <div class="d-flex align-items-center">
+                                    <i :class="getFileIcon(file)" class="fa-2x me-3"></i>
+                                    <div class="flex-grow-1">
+                                        <strong>{{ file.name }}</strong>
+                                        <br>
+                                        <small class="text-muted">{{ formatFileSize(file.size) }}</small>
+                                    </div>
+                                    <button type="button" class="btn btn-sm btn-outline-danger" @click="removeFile(index)">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
                             </div>
-                            <button type="button" class="btn btn-sm btn-outline-danger" @click="removeFile">
-                                <i class="fas fa-times"></i>
-                            </button>
                         </div>
                     </div>
 
-                    <button type="submit" class="btn btn-primary" :disabled="!selectedFile || uploading">
+                    <button type="submit" class="btn btn-primary mt-3" :disabled="selectedFiles.length === 0 || uploading">
                         <i class="fas fa-upload me-1"></i>
-                        <span v-if="uploading">Envoi en cours...</span>
-                        <span v-else>Envoyer le document</span>
+                        <span v-if="uploading">Envoi en cours... ({{ uploadProgress }}%)</span>
+                        <span v-else>Envoyer {{ selectedFiles.length }} fichier(s)</span>
                     </button>
                 </form>
             </div>
@@ -139,6 +145,14 @@
                                 </td>
                                 <td class="text-end">
                                     <div class="btn-group btn-group-sm">
+                                        <button
+                                            type="button"
+                                            @click="previewDocument(document)"
+                                            class="btn btn-outline-info"
+                                            title="Prévisualiser"
+                                        >
+                                            <i class="fas fa-eye"></i>
+                                        </button>
                                         <a
                                             :href="route('client.documents.download', document.id)"
                                             class="btn btn-outline-primary"
@@ -193,12 +207,48 @@
                 </div>
             </div>
         </div>
+
+        <!-- Modal Preview PDF -->
+        <div v-if="showPreview" class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.5);">
+            <div class="modal-dialog modal-xl modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">
+                            <i class="fas fa-file-pdf text-danger me-2"></i>
+                            {{ previewDocument.nom_document || previewDocument.nom_original }}
+                        </h5>
+                        <button type="button" class="btn-close" @click="closePreview"></button>
+                    </div>
+                    <div class="modal-body p-0" style="height: 80vh;">
+                        <iframe
+                            v-if="previewDocument"
+                            :src="route('client.documents.download', previewDocument.id)"
+                            class="w-100 h-100"
+                            style="border: none;"
+                        ></iframe>
+                    </div>
+                    <div class="modal-footer">
+                        <a
+                            :href="route('client.documents.download', previewDocument.id)"
+                            class="btn btn-primary"
+                            download
+                        >
+                            <i class="fas fa-download me-1"></i>Télécharger
+                        </a>
+                        <button type="button" class="btn btn-secondary" @click="closePreview">
+                            Fermer
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </ClientLayout>
 </template>
 
 <script>
 import ClientLayout from '@/Layouts/ClientLayout.vue';
 import { router } from '@inertiajs/vue3';
+import { useToast } from '@/composables/useToast';
 
 export default {
     components: {
@@ -216,11 +266,19 @@ export default {
         }
     },
 
+    setup() {
+        const toast = useToast();
+        return { toast };
+    },
+
     data() {
         return {
-            selectedFile: null,
+            selectedFiles: [],
             isDragOver: false,
             uploading: false,
+            uploadProgress: 0,
+            showPreview: false,
+            previewDocument: null,
             form: {
                 nom_document: ''
             }
@@ -244,73 +302,121 @@ export default {
 
         handleDrop(e) {
             this.isDragOver = false;
-            const files = e.dataTransfer.files;
-            if (files.length > 0) {
-                this.processFile(files[0]);
-            }
+            const files = Array.from(e.dataTransfer.files);
+            this.processFiles(files);
         },
 
         handleFileSelect(e) {
-            const files = e.target.files;
-            if (files.length > 0) {
-                this.processFile(files[0]);
+            const files = Array.from(e.target.files);
+            this.processFiles(files);
+        },
+
+        processFiles(files) {
+            const validFiles = [];
+            const maxSize = 20 * 1024 * 1024; // 20 Mo
+            const allowedTypes = [
+                'application/pdf',
+                'application/msword',
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                'image/jpeg',
+                'image/jpg',
+                'image/png'
+            ];
+
+            for (const file of files) {
+                // Vérifier le type
+                if (!allowedTypes.includes(file.type)) {
+                    this.toast.warning(`${file.name} : Type de fichier non supporté`);
+                    continue;
+                }
+
+                // Vérifier la taille
+                if (file.size > maxSize) {
+                    this.toast.warning(`${file.name} : Fichier trop volumineux (max 20 Mo)`);
+                    continue;
+                }
+
+                validFiles.push(file);
+            }
+
+            if (validFiles.length > 0) {
+                this.selectedFiles.push(...validFiles);
+                this.toast.success(`${validFiles.length} fichier(s) ajouté(s)`);
             }
         },
 
-        processFile(file) {
-            // Vérifier le type
-            if (file.type !== 'application/pdf') {
-                alert('Seuls les fichiers PDF sont acceptés.');
-                return;
-            }
-
-            // Vérifier la taille (20 Mo max)
-            const maxSize = 20 * 1024 * 1024;
-            if (file.size > maxSize) {
-                alert('La taille du fichier ne doit pas dépasser 20 Mo.');
-                return;
-            }
-
-            this.selectedFile = file;
-
-            // Pré-remplir le nom si vide
-            if (!this.form.nom_document) {
-                this.form.nom_document = file.name.replace('.pdf', '');
-            }
+        removeFile(index) {
+            this.selectedFiles.splice(index, 1);
         },
 
-        removeFile() {
-            this.selectedFile = null;
-            this.$refs.fileInput.value = '';
+        getFileIcon(file) {
+            if (file.type === 'application/pdf') {
+                return 'fas fa-file-pdf text-danger';
+            } else if (file.type.startsWith('image/')) {
+                return 'fas fa-file-image text-info';
+            } else if (file.type.includes('word')) {
+                return 'fas fa-file-word text-primary';
+            }
+            return 'fas fa-file text-secondary';
         },
 
         uploadDocument() {
-            if (!this.selectedFile) return;
+            if (this.selectedFiles.length === 0) return;
 
             this.uploading = true;
+            this.uploadProgress = 0;
 
             const formData = new FormData();
-            formData.append('file', this.selectedFile);
+
+            // Ajouter tous les fichiers
+            this.selectedFiles.forEach((file, index) => {
+                formData.append(`files[${index}]`, file);
+            });
+
             if (this.form.nom_document) {
                 formData.append('nom_document', this.form.nom_document);
             }
 
             router.post(route('client.documents.upload'), formData, {
                 onSuccess: () => {
-                    this.selectedFile = null;
+                    this.selectedFiles = [];
                     this.form.nom_document = '';
                     this.$refs.fileInput.value = '';
                     this.uploading = false;
+                    this.uploadProgress = 0;
+                    this.toast.saveSuccess('Document(s)');
                 },
-                onError: () => {
+                onError: (errors) => {
                     this.uploading = false;
+                    this.uploadProgress = 0;
+                    this.toast.error('Erreur lors de l\'upload des documents');
+                },
+                onProgress: (progress) => {
+                    this.uploadProgress = Math.round((progress.loaded / progress.total) * 100);
                 }
             });
         },
 
+        previewDocument(document) {
+            this.previewDocument = document;
+            this.showPreview = true;
+        },
+
+        closePreview() {
+            this.showPreview = false;
+            this.previewDocument = null;
+        },
+
         confirmDelete(document) {
             if (confirm('Êtes-vous sûr de vouloir supprimer ce document ?')) {
-                router.delete(route('client.documents.delete', document.id));
+                router.delete(route('client.documents.delete', document.id), {
+                    onSuccess: () => {
+                        this.toast.deleteSuccess('Document');
+                    },
+                    onError: () => {
+                        this.toast.error('Erreur lors de la suppression');
+                    }
+                });
             }
         },
 

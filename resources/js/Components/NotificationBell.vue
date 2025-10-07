@@ -17,6 +17,15 @@
                     {{ unreadCount > 99 ? '99+' : unreadCount }}
                     <span class="visually-hidden">notifications non lues</span>
                 </span>
+                <!-- Indicateur WebSocket connecté -->
+                <span
+                    v-if="isConnected"
+                    class="position-absolute bottom-0 start-100 translate-middle badge rounded-circle bg-success p-1"
+                    title="Temps réel activé"
+                    style="width: 10px; height: 10px;"
+                >
+                    <span class="visually-hidden">WebSocket connecté</span>
+                </span>
             </button>
             <ul class="dropdown-menu dropdown-menu-end notification-dropdown shadow" aria-labelledby="notificationDropdown">
                 <li class="dropdown-header d-flex justify-content-between align-items-center">
@@ -75,8 +84,9 @@
 </template>
 
 <script>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import { router } from '@inertiajs/vue3';
+import { useNotifications } from '@/composables/useNotifications';
 
 export default {
     props: {
@@ -87,10 +97,26 @@ export default {
     },
 
     setup(props) {
+        // Utiliser le composable pour les notifications temps réel
+        const {
+            notifications: realtimeNotifications,
+            unreadCount: realtimeUnreadCount,
+            isConnected,
+            markAsRead: markNotificationAsRead
+        } = useNotifications();
+
         const notifications = ref(props.initialNotifications || []);
 
+        // Synchroniser avec les notifications temps réel si disponibles
+        watch(realtimeNotifications, (newNotifications) => {
+            if (newNotifications.length > 0) {
+                notifications.value = newNotifications;
+            }
+        }, { deep: true });
+
         const unreadCount = computed(() => {
-            return notifications.value.filter(n => !n.lu).length;
+            // Utiliser le compteur temps réel si WebSocket connecté, sinon le compteur local
+            return isConnected.value ? realtimeUnreadCount.value : notifications.value.filter(n => !n.lu).length;
         });
 
         const hasUnread = computed(() => unreadCount.value > 0);
@@ -129,14 +155,20 @@ export default {
         };
 
         const handleNotificationClick = (notification) => {
-            // Marquer comme lu
-            if (!notification.lu) {
-                router.post(route('client.notifications.mark-read', notification.id), {}, {
-                    preserveScroll: true,
-                    onSuccess: () => {
-                        notification.lu = true;
-                    }
-                });
+            // Marquer comme lu en utilisant le composable
+            if (!notification.lu && !notification.read_at) {
+                if (isConnected.value && markNotificationAsRead) {
+                    // Utiliser le composable si WebSocket actif
+                    markNotificationAsRead(notification.id);
+                } else {
+                    // Sinon utiliser la méthode classique
+                    router.post(route('client.notifications.mark-read', notification.id), {}, {
+                        preserveScroll: true,
+                        onSuccess: () => {
+                            notification.lu = true;
+                        }
+                    });
+                }
             }
 
             // Rediriger vers la ressource liée
@@ -146,16 +178,23 @@ export default {
         };
 
         onMounted(() => {
-            // Polling pour rafraîchir les notifications toutes les 30 secondes
-            setInterval(() => {
-                router.reload({ only: ['notifications'], preserveScroll: true });
-            }, 30000);
+            // Plus besoin de polling si WebSocket actif
+            // Le polling reste en fallback si WebSocket non configuré
+            if (!window.Echo) {
+                console.log('📡 Fallback: Polling activé (WebSocket non configuré)');
+                setInterval(() => {
+                    router.reload({ only: ['notifications'], preserveScroll: true });
+                }, 30000);
+            } else {
+                console.log('⚡ WebSocket actif - Notifications temps réel activées');
+            }
         });
 
         return {
             notifications,
             unreadCount,
             hasUnread,
+            isConnected,
             getNotificationIcon,
             formatRelativeTime,
             markAsViewed,
