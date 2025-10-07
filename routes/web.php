@@ -18,6 +18,7 @@ use App\Http\Controllers\SuperAdminController;
 use App\Http\Controllers\ClientPortalController;
 use App\Http\Controllers\Client\ClientNotificationController;
 use App\Http\Controllers\Client\ClientChatController;
+use App\Http\Controllers\Client\PaymentController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -200,6 +201,12 @@ Route::middleware('auth')->group(function () {
         // Règlements
         Route::get('reglements', [ClientPortalController::class, 'reglements'])->name('client.reglements');
 
+        // Paiement en ligne (Stripe)
+        Route::get('payment/{facture}', [PaymentController::class, 'show'])->name('client.payment.show');
+        Route::post('payment/{facture}/checkout', [PaymentController::class, 'createCheckoutSession'])->name('client.payment.checkout');
+        Route::get('payment/{facture}/success', [PaymentController::class, 'success'])->name('client.payment.success');
+        Route::get('payment/{facture}/cancel', [PaymentController::class, 'cancel'])->name('client.payment.cancel');
+
         // Relances
         Route::get('relances', [ClientPortalController::class, 'relances'])->name('client.relances');
 
@@ -261,6 +268,9 @@ Route::middleware('auth')->group(function () {
         Route::get('dashboard/charts', [DashboardController::class, 'charts'])->name('api.dashboard.charts');
     });
 });
+
+// Webhook Stripe (ne nécessite pas d'authentification, mais vérification signature)
+Route::post('/stripe/webhook', [PaymentController::class, 'webhook'])->name('stripe.webhook');
 
 // Routes publiques pour la signature (ne nécessitent pas d'authentification)
 Route::prefix('sign')->group(function () {

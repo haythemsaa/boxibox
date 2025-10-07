@@ -6,9 +6,18 @@
             </a>
             <div class="d-flex justify-content-between align-items-center">
                 <h1 class="h3">Facture {{ facture.numero_facture }}</h1>
-                <a :href="route('client.factures.pdf', facture.id)" class="btn btn-primary">
-                    <i class="fas fa-download me-2"></i>Télécharger PDF
-                </a>
+                <div class="btn-group">
+                    <Link
+                        v-if="facture.statut !== 'payee'"
+                        :href="route('client.payment.show', facture.id)"
+                        class="btn btn-success"
+                    >
+                        <i class="fas fa-credit-card me-2"></i>Payer en ligne
+                    </Link>
+                    <a :href="route('client.factures.pdf', facture.id)" class="btn btn-primary">
+                        <i class="fas fa-download me-2"></i>Télécharger PDF
+                    </a>
+                </div>
             </div>
         </div>
 
