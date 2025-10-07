@@ -38,7 +38,8 @@
       "Bash(C:wamp64binphpphp8.1.0composer.cmd require pusher/pusher-php-server)",
       "Bash(git checkout:*)",
       "Bash(\"C:\\wamp64\\bin\\php\\php8.1.0\\composer.cmd\" require stripe/stripe-php)",
-      "Bash(\"C:\\wamp64\\bin\\php\\php8.1.0\\composer.cmd\" show stripe/stripe-php)"
+      "Bash(\"C:\\wamp64\\bin\\php\\php8.1.0\\composer.cmd\" show stripe/stripe-php)",
+      "Bash(if not exist \"resources\\views\\emails\" mkdir \"resources\\views\\emails\")"
     ],
     "deny": [],
     "ask": []

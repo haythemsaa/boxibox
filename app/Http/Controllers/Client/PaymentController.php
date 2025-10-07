@@ -5,8 +5,11 @@ namespace App\Http\Controllers\Client;
 use App\Http\Controllers\Controller;
 use App\Models\Facture;
 use App\Models\Reglement;
+use App\Mail\PaymentConfirmation;
+use App\Mail\PaymentNotificationAdmin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
 use Stripe\Stripe;
 use Stripe\Checkout\Session as StripeSession;
@@ -223,8 +226,22 @@ class PaymentController extends Controller
             'montant' => $facture->montant_ttc,
         ]);
 
-        // TODO: Envoyer une notification au client
-        // TODO: Envoyer une notification à l'admin
+        // Envoyer email de confirmation au client
+        try {
+            Mail::to($facture->client->email)->send(new PaymentConfirmation($facture, $reglement));
+            \Log::info('Email de confirmation envoyé au client', ['email' => $facture->client->email]);
+        } catch (\Exception $e) {
+            \Log::error('Erreur envoi email client: ' . $e->getMessage());
+        }
+
+        // Envoyer notification à l'admin
+        try {
+            $adminEmail = config('mail.admin_email', config('mail.from.address'));
+            Mail::to($adminEmail)->send(new PaymentNotificationAdmin($facture, $reglement));
+            \Log::info('Notification admin envoyée', ['email' => $adminEmail]);
+        } catch (\Exception $e) {
+            \Log::error('Erreur envoi notification admin: ' . $e->getMessage());
+        }
     }
 
     /**

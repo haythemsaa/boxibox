@@ -23,6 +23,7 @@ Cette intégration permet aux clients de payer leurs factures en ligne via **Str
 - ✅ Webhooks pour confirmation automatique des paiements
 - ✅ Création automatique de règlements
 - ✅ Mise à jour automatique des factures
+- ✅ Notifications email automatiques (client + admin)
 - ✅ Pages de succès et d'annulation
 - ✅ Mode test et production
 - ✅ Sécurité PCI-DSS (aucune donnée bancaire stockée)
@@ -116,6 +117,9 @@ ngrok http 8000
 app/
 ├── Http/Controllers/Client/
 │   └── PaymentController.php          [CRÉÉ] - Contrôleur de paiement
+├── Mail/
+│   ├── PaymentConfirmation.php        [CRÉÉ] - Email client
+│   └── PaymentNotificationAdmin.php   [CRÉÉ] - Email admin
 ├── Models/
 │   ├── Facture.php                    [EXISTANT]
 │   └── Reglement.php                  [EXISTANT]
@@ -123,6 +127,9 @@ config/
 └── services.php                       [CRÉÉ] - Configuration Stripe
 routes/
 └── web.php                            [MODIFIÉ] - Routes de paiement
+resources/views/emails/
+├── payment-confirmation.blade.php     [CRÉÉ] - Template client
+└── payment-notification-admin.blade.php [CRÉÉ] - Template admin
 ```
 
 #### Frontend (Vue.js)
